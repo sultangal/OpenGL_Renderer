@@ -1,32 +1,16 @@
-# Prerequisites
-*.d
+# Directories
+.vs/
+x64/
+bin/intermediates/
+bin/Win32/
+bin/x64/
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
+
+# Files
+*.user
 *.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
+*.fbx
+*.jpg
+*.jpeg
+*.png
+*.tga
