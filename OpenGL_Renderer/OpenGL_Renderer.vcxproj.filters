@@ -63,6 +63,8 @@
     <None Include="res\shaders\NormalMap.vert" />
     <None Include="res\shaders\NormalMap.frag" />
     <None Include="res\shaders\NormalMap.geom" />
+    <None Include="res\shaders\ToneMapping.frag" />
+    <None Include="res\shaders\ToneMapping.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\VertexBuffer.h">

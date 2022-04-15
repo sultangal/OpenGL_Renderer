@@ -7,14 +7,14 @@
 #include "ErrorCheck.h"
 
 Texture::Texture(const std::string& filePath, unsigned char textureSlot, bool gammaCorrected)
-    :m_TextureSloth(textureSlot)
+    :m_TextureSlot(textureSlot)
 {
     stbi_set_flip_vertically_on_load(true);
     int nrChannels;
     m_Data = stbi_load(filePath.c_str(), &m_TexWidth, &m_TexHeight, &nrChannels, 0);
     GLCall(glGenTextures(1, &m_RendererID));
 
-    AssignTexSloth(textureSlot);
+    AssignTexSlot(textureSlot);
 
     if (m_Data) {
         GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
@@ -38,9 +38,9 @@ Texture::Texture(const std::string& filePath, unsigned char textureSlot, bool ga
 }
 
 Texture::Texture(const unsigned int& frameWidth, const unsigned int& frameHeight, const unsigned char& aaSamples, unsigned char textureSlot)
-    :m_Data(nullptr), m_TexWidth(0), m_TexHeight(0), m_TextureSloth(0)
+    :m_Data(nullptr), m_TexWidth(0), m_TexHeight(0), m_TextureSlot(0)
 {
-    AssignTexSloth(textureSlot);
+    AssignTexSlot(textureSlot);
     GLCall(glGenTextures(1, &m_RendererID));
     GLCall(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_RendererID));
     GLCall(glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, aaSamples, GL_RGB16F, frameWidth, frameHeight, GL_TRUE));
@@ -49,9 +49,9 @@ Texture::Texture(const unsigned int& frameWidth, const unsigned int& frameHeight
 }
 
 Texture::Texture(const unsigned int& frameWidth, const unsigned int& frameHeight, unsigned char textureSlot)
-    :m_Data(nullptr), m_TexWidth(0), m_TexHeight(0), m_TextureSloth(textureSlot)
+    :m_Data(nullptr), m_TexWidth(0), m_TexHeight(0), m_TextureSlot(textureSlot)
 {
-    AssignTexSloth(textureSlot);
+    AssignTexSlot(textureSlot);
     GLCall(glGenTextures(1, &m_RendererID));
     GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
     GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, frameWidth, frameHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
@@ -62,14 +62,14 @@ Texture::Texture(const unsigned int& frameWidth, const unsigned int& frameHeight
 
 void Texture::Bind(unsigned char textureSlot)
 {
-    m_TextureSloth = textureSlot;
-    AssignTexSloth(textureSlot);
+    m_TextureSlot = textureSlot;
+    AssignTexSlot(textureSlot);
     GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
 }
 
 void Texture::Bind()
 {
-    AssignTexSloth(m_TextureSloth);
+    AssignTexSlot(m_TextureSlot);
     GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
 }
 
@@ -78,12 +78,12 @@ void Texture::Unbind()
     GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
-unsigned char Texture::GetTexSlothID()
+unsigned char Texture::GetTexSlotID()
 {
-    return m_TextureSloth;
+    return m_TextureSlot;
 }
 
-void Texture::AssignTexSloth(unsigned char textureSlot) {
+void Texture::AssignTexSlot(unsigned char textureSlot) {
     if (textureSlot > 11) std::cout << "[WARNNIG] glActiveTexture don't have so many slots! Assigning default texture slot." << std::endl;
     switch (textureSlot)
     {

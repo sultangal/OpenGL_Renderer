@@ -16,7 +16,7 @@ void FrameBuffer::Bind() const {
     GLCall(glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID));
 }
 
-void FrameBuffer::Blit(const unsigned int& frameWidth, const unsigned int& frameHeight, const unsigned char& aaSamples) const {
+void FrameBuffer::Blit(const unsigned int& frameWidth, const unsigned int& frameHeight) const {
     GLCall(glBlitFramebuffer(0, 0, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST));
 }
 
@@ -34,6 +34,6 @@ void FrameBuffer::BindDraw() const {
     GLCall(glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_RendererID));
 }
 
-void FrameBuffer::BindDefaultFB() const {
+void FrameBuffer::Unbind() const {
     GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }

@@ -204,6 +204,8 @@
     <None Include="res\shaders\NormalMap.geom" />
     <None Include="res\shaders\NormalMap.vert" />
     <None Include="res\shaders\Shader.glsl" />
+    <None Include="res\shaders\ToneMapping.frag" />
+    <None Include="res\shaders\ToneMapping.vert" />
     <None Include="res\shaders\Vertex.vert" />
   </ItemGroup>
   <ItemGroup>

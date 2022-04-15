@@ -8,8 +8,8 @@ private:
 	unsigned char* m_Data;
 	int m_TexWidth;
 	int m_TexHeight;
-	unsigned char m_TextureSloth;
-	void AssignTexSloth(unsigned char textureSlot);
+	unsigned char m_TextureSlot;
+	void AssignTexSlot(unsigned char textureSlot);
 public:
 	Texture(const std::string& filePath, unsigned char textureSlot, bool gammaCorrected);
 	Texture(const unsigned int& frameWidth, const unsigned int& frameHeight, const unsigned char& aaSamples, unsigned char textureSlot);
@@ -19,7 +19,7 @@ public:
 	void Bind(unsigned char textureSlot);
 	void Bind();
 	void Unbind();
-	unsigned char GetTexSlothID();
+	unsigned char GetTexSlotID();
 
 
 

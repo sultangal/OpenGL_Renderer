@@ -51,7 +51,7 @@ void Shader::SetUniform3f(const std::string& name, const float v0, const float v
 
 void Shader::SetUniform1i(const std::string& name, const int data)
 {
-	glUniform1i(GetUniformLocation(name), data);
+	GLCall(glUniform1i(GetUniformLocation(name), data));
 }
 
 void Shader::SetUniformMatrix4fv(const std::string& name, const float* data)
