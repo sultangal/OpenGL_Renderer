@@ -19,52 +19,59 @@ int aaSamples = renderer.GetAASamples();
 int main(void)
 {   
     if (!renderer.Init()) return -1;       
-    {   
-        FrameBuffer fb;
-        Texture textureColorBufferMultiSampled(frameWidth, frameHeight, aaSamples, 0);        
-        RenderBuffer rb(frameWidth, frameHeight, aaSamples);
-        fb.CheckComplitness();
-        fb.Unbind();
+    {  
+        //----------------------------//
+        FrameBuffer mainFB;
+        Texture textureMainFB(frameWidth, frameHeight, aaSamples, 8);
+        RenderBuffer mainRB(frameWidth, frameHeight, aaSamples);
+        mainFB.CheckComplitness();
+        mainFB.Unbind();
 
-        FrameBuffer interFb;
-        Texture screenTexture(frameWidth, frameHeight, 2);
-        interFb.CheckComplitness();
-        interFb.Unbind();
+        FrameBuffer mainPostFB;
+        Texture mainPostFBTexture(frameWidth, frameHeight, 9);
+        mainPostFB.CheckComplitness();
+        mainPostFB.Unbind();
 
+        FrameBuffer screenFB;
+        Texture screenFBTexture(frameWidth, frameHeight, 2);
+        screenFB.CheckComplitness();
+        screenFB.Unbind();
+
+        FrameBuffer gaussBlurFB;
+        Texture textureGaussBlurFB(frameWidth, frameHeight, 7);
+        gaussBlurFB.CheckComplitness();
+        gaussBlurFB.Unbind();
+
+
+
+
+        //screen quad
         float quadVertices[] = {   // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
             // positions   // texCoords
             -1.0f,  1.0f,  0.0f, 1.0f,
             -1.0f, -1.0f,  0.0f, 0.0f,
              1.0f, -1.0f,  1.0f, 0.0f,
-
+                     
             -1.0f,  1.0f,  0.0f, 1.0f,
              1.0f, -1.0f,  1.0f, 0.0f,
              1.0f,  1.0f,  1.0f, 1.0f
-        };
-
-        //draw screen quad
+        };       
         VertexBuffer vbFB(quadVertices, 24 * sizeof(float));
         VertexBufferLayout layoutFB;
         layoutFB.Push<float>(2); layoutFB.Push<float>(2);
         VertexArray vaFB;
         vaFB.AddBuffer(vbFB, layoutFB);
+        //----------------------------//
 
+        //models import and vertex buffer, vertex array, layout generation for that models
         ObjImporter objImport("res/models/statue_hard2.obj", true);
-
-        //vertex array generation
         VertexArray va;
-
-        //vertex buffer generation
-        VertexBuffer vb(objImport.GetVertecies(), objImport.GetVertCount());
-       
-        //attributes generation
+        VertexBuffer vb(objImport.GetVertecies(), objImport.GetVertCount());      
         VertexBufferLayout layout;
         layout.Push<float>(3); layout.Push<float>(3); layout.Push<float>(2); layout.Push<float>(3);  
         VertexBufferLayout layoutTBN;
         layoutTBN.Push<float>(3); layoutTBN.Push<float>(3); layoutTBN.Push<float>(2); layoutTBN.Push<float>(3); layoutTBN.Push<float>(3); layoutTBN.Push<float>(3);
-        va.AddBuffer(vb, layoutTBN);
-        //index buffer generation
-        //IndexBuffer ib(objImport.GetIndecies(), objImport.GetIndeciesCount());                        
+        va.AddBuffer(vb, layoutTBN);                        
 
         ObjImporter objImport2("res/models/cube.obj", false);
         VertexArray va2;
@@ -81,14 +88,17 @@ int main(void)
         Shader toneMappingShader("res/shaders/ToneMapping.vert", "res/shaders/ToneMapping.frag");
         Shader normalShader("res/shaders/NormalMap.vert", "res/shaders/NormalMap.frag");
         Shader pureColor("res/shaders/Color.vert", "res/shaders/Color.frag");
-        Shader shaderFB("res/shaders/FrameBuffer.vert", "res/shaders/FrameBuffer.frag");      
+        Shader gaussianBlurShader("res/shaders/GaussianBlur.vert", "res/shaders/GaussianBlur.frag");      
+        Shader blendShader("res/shaders/Blend.vert", "res/shaders/Blend.frag");      
+        Shader thresholdShader("res/shaders/Threshold.vert", "res/shaders/Threshold.frag");
 
         //texture generation
+        
         Texture tex001("res/textures/tgziabifa_4K_Albedo.jpg", 0, true);
         Texture tex002("res/textures/tgziabifa_4K_Specular.jpg", 1, true);
         Texture tex004("res/textures/tgziabifa_4K_Normal_LOD0.jpg", 4, false);
-        Texture tex003("res/textures/tgziabifa_4K_Albedo.jpg", 3, true);      
-        Texture tex005("res/textures/tgziabifa_4K_Specular.jpg", 5, true);      
+        Texture tex003("res/textures/tgziabifa_4K_Albedo.jpg", 3, true);
+        Texture tex005("res/textures/tgziabifa_4K_Specular.jpg", 5, true);
         Texture tex006("res/textures/tgziabifa_4K_Normal_LOD0.jpg", 6, false);
 
         glm::vec3 positions[10] =
@@ -102,15 +112,13 @@ int main(void)
          {1.0f, 1.0f, -1.0f},
          {2.0f, 3.0f, 0.0f},
          {1.0f, 2.0f, 0.0f}};       
-        float rot = 0.0f;    
-        //glm::vec4 environmentColor = glm::vec4(0.5f, 0.85f, 5.0f, 1.0f);
-        glm::vec4 environmentColor = glm::vec4(0.5f, 1.0f, 3.0f, 1.0f);
-        
-        //MAIN LOOP
+        float rotation = 0.0f;    
+        glm::vec4 environmentColor = glm::vec4(0.5f, 1.0f, 3.0f, 1.0f);                
         glm::vec3 cameraPos = glm::vec3();
         glm::vec3 cameraFront = glm::vec3();
         glm::vec3 cameraUp = glm::vec3();
         float fov = 0.0f;
+        //MAIN LOOP
         while (renderer.IsWindowClosed())
         {
             renderer.ProceedInput();
@@ -118,10 +126,9 @@ int main(void)
             cameraFront = renderer.GetCameraFront();
             cameraUp = renderer.GetCameraUp();
             fov = renderer.GetFov();
-            
-            // draw scene as normal in multisampled buffers
-            fb.Bind();          
+            mainFB.Bind();                    
             renderer.Clear(environmentColor);
+            mainFB.EnableDepthTest();
             /* Render here */           
             glm::mat4 view = glm::mat4(1.0f);
             view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
@@ -190,8 +197,8 @@ int main(void)
             normalShader.SetUniform1i("normalMap", tex004.GetTexSlotID());
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(0.0f, 0.0f, -10.0f));
-            model = glm::rotate(model, glm::radians(rot), glm::vec3(0.0f, 1.0f, 0.0f));
-            rot += 0.05f;
+            model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
+            rotation += 0.05f;
             model = glm::scale(model, glm::vec3(1.0f));
             
             normalShader.SetUniformMatrix4fv("model", glm::value_ptr(model));
@@ -206,31 +213,85 @@ int main(void)
             normalShader.SetUniform1f("quadratic", 0.032f);
             renderer.DrawVB(va3, vb3, normalShader);
 
-             /////////////////////////////////////////////////
-            interFb.BindDraw();
-            interFb.Blit(frameWidth, frameHeight);
-            interFb.Unbind();
-            renderer.Clear(glm::vec4(1.0f));
-            toneMappingShader.Bind();
-            toneMappingShader.SetUniform1i("screenTexture", screenTexture.GetTexSlotID());
-            renderer.DrawVB(vaFB, vbFB, toneMappingShader);           
-
-            //blit multisampled buffer(s) to normal colorbuffer of intermediate FBO. Image is stored in screenTexture
+            /////////////////////////////////////////////////
+         
+            /*
+            //gaussian blur
             bool horizontal = true;
-            for (unsigned int i = 0; i < 500; i++)
+            for (unsigned int i = 0; i < 5; i++)
             {
-                interFb.BindDraw();
-                interFb.Blit(frameWidth, frameHeight);
-                interFb.Unbind();
+                screenFB.BindDraw();
+                screenFB.Blit(frameWidth, frameHeight);
+                screenFB.Unbind();
                 renderer.Clear(glm::vec4(1.0f));            
-                shaderFB.Bind();
-                shaderFB.SetUniform1i("screenTexture", screenTexture.GetTexSlotID());
-                shaderFB.SetUniform1i("horizontal", horizontal);
-                renderer.DrawVB(vaFB, vbFB, shaderFB);
+                gaussianBlurShader.Bind();
+                gaussianBlurShader.SetUniform1i("screenTexture", screenFBTexture.GetTexSlotID());
+                gaussianBlurShader.SetUniform1i("horizontal", horizontal);
+                renderer.DrawVB(vaFB, vbFB, gaussianBlurShader);
+                horizontal = !horizontal;
+            }
+          */
+
+            mainFB.DisableDepthTest();
+            mainPostFB.BindDraw(); 
+            renderer.Clear(glm::vec4(0.0f));
+            mainPostFB.Blit(frameWidth, frameHeight);                      
+            //mainPostFB.Unbind();            
+            
+            mainFB.BindRead(); 
+            gaussBlurFB.BindDraw();
+            renderer.Clear(glm::vec4(0.0f));
+            gaussBlurFB.Blit(frameWidth, frameHeight);            
+            thresholdShader.Bind();
+            thresholdShader.SetUniform1i("screenTexture", textureGaussBlurFB.GetTexSlotID());
+            renderer.DrawVB(vaFB, vbFB, thresholdShader);
+
+            gaussBlurFB.Bind();
+            bool horizontal = true;
+            for (unsigned int i = 0; i < 50; i++)
+            {                      
+                gaussianBlurShader.Bind();
+                gaussianBlurShader.SetUniform1i("screenTexture", textureGaussBlurFB.GetTexSlotID());
+                gaussianBlurShader.SetUniform1i("horizontal", horizontal);
+                renderer.DrawVB(vaFB, vbFB, gaussianBlurShader);
                 horizontal = !horizontal;
             }
 
+            //}
+            //gaussBlurFB.Unbind();
+            //renderer.Clear(glm::vec4(0.0f));
+            
+            //mainFB.Bind();
+            //bool horizontal = true;
+            //for (unsigned int i = 0; i < 10; i++)
+            //{
+              //  gaussBlurFB.Bind();
+            //    gaussBlurFB.Unbind();
+            //    renderer.Clear(glm::vec4(1.0f));
+                //gaussianBlurShader.Bind();
+                //gaussianBlurShader.SetUniform1i("screenTexture", textureGaussBlurFB.GetTexSlotID());                                       
+                //gaussianBlurShader.SetUniform1i("horizontal", true);
+                //renderer.DrawVB(vaFB, vbFB, gaussianBlurShader);
+            //    horizontal = !horizontal;
+            //}
+            
+            //renderer.Clear(glm::vec4(0.0f));
 
+            mainFB.Unbind();
+            renderer.Clear(glm::vec4(0.0f));
+            blendShader.Bind();
+            blendShader.SetUniform1i("textureToBlend01", mainPostFBTexture.GetTexSlotID());
+            blendShader.SetUniform1i("textureToBlend02", textureGaussBlurFB.GetTexSlotID());           
+            renderer.DrawVB(vaFB, vbFB, blendShader);
+
+           ////tone mapping
+           //screenFB.BindDraw();
+           //screenFB.Blit(frameWidth, frameHeight);
+           //screenFB.Unbind();
+           //renderer.Clear(glm::vec4(1.0f));
+           //toneMappingShader.Bind();
+           //toneMappingShader.SetUniform1i("screenTexture", screenFBTexture.GetTexSlotID());
+           //renderer.DrawVB(vaFB, vbFB, toneMappingShader);
 
             renderer.SwapBuffers();        
         }

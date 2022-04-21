@@ -149,6 +149,7 @@ bool Renderer::Init()
     GLCall(glEnable(GL_DEPTH_TEST));
     GLCall(glEnable(GL_BLEND));
     GLCall(glEnable(GL_CULL_FACE));
+    GLCall(glEnable(GL_MULTISAMPLE));
     GLCall(glCullFace(GL_BACK));
     std::cout << glGetString(GL_VERSION) << std::endl;
 }

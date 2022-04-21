@@ -12,9 +12,18 @@
     <Filter Include="Header Files\vendor">
       <UniqueIdentifier>{1db0cb4a-cff1-4406-86f0-f6e01e155faa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{85bd464a-ce9f-4b8b-8485-13563edad5ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fragment Shader">
+      <UniqueIdentifier>{b143d28a-d12f-419a-99ee-899553b7591a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vertex Shader">
+      <UniqueIdentifier>{4bb831e4-56c9-4502-ad8a-37debb1b5099}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\main.cpp">
+    <ClCompile Include="src\MAIN.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\VertexBuffer.cpp">
@@ -52,19 +61,57 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders\Shader.glsl" />
-    <None Include="res\shaders\Fragment.frag" />
-    <None Include="res\shaders\Vertex.vert" />
-    <None Include="res\shaders\Color.vert" />
-    <None Include="res\shaders\Color.frag" />
-    <None Include="res\shaders\FrameBuffer.frag" />
-    <None Include="res\shaders\FrameBuffer.vert" />
-    <None Include="res\shaders\Geometry.geom" />
-    <None Include="res\shaders\NormalMap.vert" />
-    <None Include="res\shaders\NormalMap.frag" />
-    <None Include="res\shaders\NormalMap.geom" />
-    <None Include="res\shaders\ToneMapping.frag" />
-    <None Include="res\shaders\ToneMapping.vert" />
+    <None Include="res\shaders\Geometry.geom">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="res\shaders\NormalMap.geom">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="res\shaders\Shader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="res\shaders\Blend.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\Color.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\GaussianBlur.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\NormalMap.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\Threshold.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\ToneMapping.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\Color.vert">
+      <Filter>Vertex Shader</Filter>
+    </None>
+    <None Include="res\shaders\Blend.vert">
+      <Filter>Vertex Shader</Filter>
+    </None>
+    <None Include="res\shaders\GaussianBlur.vert">
+      <Filter>Vertex Shader</Filter>
+    </None>
+    <None Include="res\shaders\NormalMap.vert">
+      <Filter>Vertex Shader</Filter>
+    </None>
+    <None Include="res\shaders\Threshold.vert">
+      <Filter>Vertex Shader</Filter>
+    </None>
+    <None Include="res\shaders\ToneMapping.vert">
+      <Filter>Vertex Shader</Filter>
+    </None>
+    <None Include="res\shaders\Vertex.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="res\shaders\Fragment.frag">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\VertexBuffer.h">

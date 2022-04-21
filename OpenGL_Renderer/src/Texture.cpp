@@ -7,7 +7,7 @@
 #include "ErrorCheck.h"
 
 Texture::Texture(const std::string& filePath, unsigned char textureSlot, bool gammaCorrected)
-    :m_TextureSlot(textureSlot)
+    :m_Data(nullptr), m_TexWidth(0), m_TexHeight(0), m_TextureSlot(textureSlot)
 {
     stbi_set_flip_vertically_on_load(true);
     int nrChannels;
@@ -19,10 +19,12 @@ Texture::Texture(const std::string& filePath, unsigned char textureSlot, bool ga
     if (m_Data) {
         GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
         //GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-        if (gammaCorrected) { 
-            GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB, m_TexWidth, m_TexHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, m_Data)); }
-        else { 
-            GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_TexWidth, m_TexHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, m_Data)); }
+        if (gammaCorrected) {
+            GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB, m_TexWidth, m_TexHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, m_Data));
+        }
+        else {
+            GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_TexWidth, m_TexHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, m_Data));
+        }
 
         GLCall(glGenerateMipmap(GL_TEXTURE_2D));
 
@@ -38,7 +40,7 @@ Texture::Texture(const std::string& filePath, unsigned char textureSlot, bool ga
 }
 
 Texture::Texture(const unsigned int& frameWidth, const unsigned int& frameHeight, const unsigned char& aaSamples, unsigned char textureSlot)
-    :m_Data(nullptr), m_TexWidth(0), m_TexHeight(0), m_TextureSlot(0)
+    :m_Data(nullptr), m_TexWidth(0), m_TexHeight(0), m_TextureSlot(textureSlot)
 {
     AssignTexSlot(textureSlot);
     GLCall(glGenTextures(1, &m_RendererID));
@@ -46,6 +48,7 @@ Texture::Texture(const unsigned int& frameWidth, const unsigned int& frameHeight
     GLCall(glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, aaSamples, GL_RGB16F, frameWidth, frameHeight, GL_TRUE));
     GLCall(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0));
     GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_RendererID, 0));
+    
 }
 
 Texture::Texture(const unsigned int& frameWidth, const unsigned int& frameHeight, unsigned char textureSlot)
@@ -57,7 +60,10 @@ Texture::Texture(const unsigned int& frameWidth, const unsigned int& frameHeight
     GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, frameWidth, frameHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-    GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_RendererID, 0));	// we only need a color buffer
+    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+    GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_RendererID, 0));
+    
 }
 
 void Texture::Bind(unsigned char textureSlot)
@@ -131,4 +137,5 @@ void Texture::AssignTexSlot(unsigned char textureSlot) {
 
 Texture::~Texture()
 {
+    GLCall(glDeleteTextures(1, &m_RendererID));
 }

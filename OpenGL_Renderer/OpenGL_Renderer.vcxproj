@@ -29,13 +29,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -48,7 +48,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -188,7 +188,7 @@
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\IndexBuffer.cpp" />
-    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\MAIN.cpp" />
     <ClCompile Include="src\VertexBuffer.cpp" />
     <ClCompile Include="src\VertexArray.cpp" />
     <ClCompile Include="src\Texture.cpp" />
@@ -197,13 +197,17 @@
     <None Include="res\shaders\Color.frag" />
     <None Include="res\shaders\Color.vert" />
     <None Include="res\shaders\Fragment.frag" />
-    <None Include="res\shaders\FrameBuffer.frag" />
-    <None Include="res\shaders\FrameBuffer.vert" />
+    <None Include="res\shaders\GaussianBlur.frag" />
+    <None Include="res\shaders\GaussianBlur.vert" />
     <None Include="res\shaders\Geometry.geom" />
     <None Include="res\shaders\NormalMap.frag" />
     <None Include="res\shaders\NormalMap.geom" />
     <None Include="res\shaders\NormalMap.vert" />
+    <None Include="res\shaders\Threshold.frag" />
+    <None Include="res\shaders\Threshold.vert" />
     <None Include="res\shaders\Shader.glsl" />
+    <None Include="res\shaders\Blend.frag" />
+    <None Include="res\shaders\Blend.vert" />
     <None Include="res\shaders\ToneMapping.frag" />
     <None Include="res\shaders\ToneMapping.vert" />
     <None Include="res\shaders\Vertex.vert" />

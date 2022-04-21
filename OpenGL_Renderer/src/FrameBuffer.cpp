@@ -17,7 +17,7 @@ void FrameBuffer::Bind() const {
 }
 
 void FrameBuffer::Blit(const unsigned int& frameWidth, const unsigned int& frameHeight) const {
-    GLCall(glBlitFramebuffer(0, 0, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST));
+    GLCall(glBlitFramebuffer(0, 0, frameWidth, frameHeight, 0, 0, frameWidth, frameHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR));
 }
 
 void FrameBuffer::CheckComplitness() const {
@@ -28,6 +28,14 @@ void FrameBuffer::CheckComplitness() const {
 
 void FrameBuffer::BindRead() const {
     GLCall(glBindFramebuffer(GL_READ_FRAMEBUFFER, m_RendererID));
+}
+
+void FrameBuffer::EnableDepthTest() const {
+    GLCall(glEnable(GL_DEPTH_TEST););
+}
+
+void FrameBuffer::DisableDepthTest() const {
+    GLCall(glEnable(GL_DEPTH_TEST););
 }
 
 void FrameBuffer::BindDraw() const {
