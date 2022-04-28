@@ -93,15 +93,22 @@ ShaderProgramSource Shader::ParseShader(const std::string& vertexPath, const std
 	std::string line;
 	std::string srcV;
 	std::string srcF;
-	while (!streamV.eof()) {
-		std::getline(streamV, line);
-		srcV += line + '\n';
+	if (streamV.good() && streamF.good()) {
+		while (!streamV.eof()) {
+			std::getline(streamV, line);
+			srcV += line + '\n';
+		}
+		while (!streamF.eof()) {
+			std::getline(streamF, line);
+			srcF += line + '\n';
+		}
+		return { srcV, srcF };
 	}
-	while (!streamF.eof()) {
-		std::getline(streamF, line);
-		srcF += line + '\n';
+	else {
+		std::cout << "[Shader][ERROR]::Problem with shader file! Returning empty shader source." << std::endl;
+		return { srcV, srcF };
 	}
-	return { srcV, srcF };
+	
 }
 
 ShaderProgramSource Shader::ParseShader(const std::string& vertexPath, const std::string& fragmentPath, const std::string& geometryPath)
@@ -113,19 +120,25 @@ ShaderProgramSource Shader::ParseShader(const std::string& vertexPath, const std
 	std::string srcV;
 	std::string srcF;
 	std::string srcG;
-	while (!streamV.eof()) {
-		std::getline(streamV, line);
-		srcV += line + '\n';
+	if (streamV.good() && streamF.good() && streamG.good()) {
+		while (!streamV.eof()) {
+			std::getline(streamV, line);
+			srcV += line + '\n';
+		}
+		while (!streamF.eof()) {
+			std::getline(streamF, line);
+			srcF += line + '\n';
+		}
+		while (!streamG.eof()) {
+			std::getline(streamG, line);
+			srcG += line + '\n';
+		}
+		return { srcV, srcF, srcG };
 	}
-	while (!streamF.eof()) {
-		std::getline(streamF, line);
-		srcF += line + '\n';
+	else {
+		std::cout << "[Shader][ERROR]::Problem with shader file! Returning empty shader source." << std::endl;
+		return { srcV, srcF, srcG };
 	}
-	while (!streamG.eof()) {
-		std::getline(streamG, line);
-		srcG += line + '\n';
-	}
-	return { srcV, srcF, srcG };
 }
 
 unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
@@ -135,15 +148,15 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 	GLCall(glShaderSource(id, 1, &src, nullptr));
 	GLCall(glCompileShader(id));
 
-	int result;
+	int result = 0;
 	GLCall(glGetShaderiv(id, GL_COMPILE_STATUS, &result));
 	if (result == GL_FALSE)
 	{
-		int length;
+		int length = 0;
 		GLCall(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
 		char* message = (char*)_malloca(length * sizeof(char));
 		GLCall(glGetShaderInfoLog(id, length, &length, message));
-		std::cout << "Faled to compile " <<
+		std::cout << "[Shader][ERROR]::Faled to compile " <<
 			(type == GL_VERTEX_SHADER ? "vertex" : "fragment")
 			<< " shader!" << std::endl;
 		std::cout << message << std::endl;
@@ -195,9 +208,9 @@ unsigned int Shader::GetUniformLocation(const std::string& name)
 	if(m_UniformLocationCashe.find(name) != m_UniformLocationCashe.end())
 	return m_UniformLocationCashe[name];
 
-	GLCall(int location = glGetUniformLocation(m_RendererID, name.c_str()));
+	int location = glGetUniformLocation(m_RendererID, name.c_str());
 	if (location == -1)
-		std::cout << "Warning: uniform '" << name << "' does not exist!" << std::endl;
+		std::cout << "[Shader][WARNNING]::Uniform '" << name << "' does not exist!" << std::endl;
 	m_UniformLocationCashe[name] = location;
 	return location;
 }

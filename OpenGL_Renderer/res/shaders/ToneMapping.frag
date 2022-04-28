@@ -25,7 +25,7 @@ void main()
 	vec3 hdrColor = texture(screenTexture, TexCoords).rgb;
    //tone mapping
    const float gamma = 2.2;
-   vec3 mapped = aces(hdrColor);
+   vec3 mapped = tonemapFilmic(hdrColor);
    mapped = pow(mapped, vec3( 1.0 / gamma));
    //out result
    FragColor = vec4(mapped, 1.0);

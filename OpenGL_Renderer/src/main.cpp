@@ -17,9 +17,10 @@ int frameHeight = renderer.GetHeight();
 int aaSamples = renderer.GetAASamples();
 
 int main(void)
-{   
+{
+
     if (!renderer.Init()) return -1;       
-    {  
+    { 
         //----------------------------//
         FrameBuffer mainFB;
         Texture textureMainFB(frameWidth, frameHeight, aaSamples, 8);
@@ -40,11 +41,8 @@ int main(void)
         FrameBuffer gaussBlurFB;
         Texture textureGaussBlurFB(frameWidth, frameHeight, 7);
         gaussBlurFB.CheckComplitness();
-        gaussBlurFB.Unbind();
-
-
-
-
+        gaussBlurFB.Unbind();    
+       
         //screen quad
         float quadVertices[] = {   // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
             // positions   // texCoords
@@ -62,26 +60,76 @@ int main(void)
         VertexArray vaFB;
         vaFB.AddBuffer(vbFB, layoutFB);
         //----------------------------//
-
+        
         //models import and vertex buffer, vertex array, layout generation for that models
         ObjImporter objImport("res/models/statue_hard2.obj", true);
         VertexArray va;
-        VertexBuffer vb(objImport.GetVertecies(), objImport.GetVertCount());      
-        VertexBufferLayout layout;
-        layout.Push<float>(3); layout.Push<float>(3); layout.Push<float>(2); layout.Push<float>(3);  
+        VertexBuffer vb(objImport.GetVertecies(), objImport.GetVertCount());       
         VertexBufferLayout layoutTBN;
         layoutTBN.Push<float>(3); layoutTBN.Push<float>(3); layoutTBN.Push<float>(2); layoutTBN.Push<float>(3); layoutTBN.Push<float>(3); layoutTBN.Push<float>(3);
         va.AddBuffer(vb, layoutTBN);                        
-
+        
         ObjImporter objImport2("res/models/cube.obj", false);
-        VertexArray va2;
-        VertexBuffer vb2(objImport2.GetVertecies(), objImport2.GetVertCount());      
-        va2.AddBuffer(vb2, layout);
+        VertexArray cubeVA;
+        VertexBuffer cubeVB(objImport2.GetVertecies(), objImport2.GetVertCount()); 
+        VertexBufferLayout cubeLayout;
+        cubeLayout.Push<float>(3); cubeLayout.Push<float>(3); cubeLayout.Push<float>(2); cubeLayout.Push<float>(3);
+        cubeVA.AddBuffer(cubeVB, cubeLayout);
 
         ObjImporter objImport3("res/models/statue_hard2.obj", true);
-        VertexArray va3;
-        VertexBuffer vb3(objImport3.GetVertecies(), objImport3.GetVertCount());
-        va3.AddBuffer(vb3, layoutTBN);
+        VertexArray statueVA;
+        VertexBuffer statueVB(objImport3.GetVertecies(), objImport3.GetVertCount());
+        statueVA.AddBuffer(statueVB, layoutTBN);
+        
+        float skyboxVertices[] = {
+            // positions          
+            -1.0f,  1.0f, -1.0f,
+            -1.0f, -1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+             1.0f,  1.0f, -1.0f,
+            -1.0f,  1.0f, -1.0f,
+
+            -1.0f, -1.0f,  1.0f,
+            -1.0f, -1.0f, -1.0f,
+            -1.0f,  1.0f, -1.0f,
+            -1.0f,  1.0f, -1.0f,
+            -1.0f,  1.0f,  1.0f,
+            -1.0f, -1.0f,  1.0f,
+
+             1.0f, -1.0f, -1.0f,
+             1.0f, -1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+
+            -1.0f, -1.0f,  1.0f,
+            -1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f, -1.0f,  1.0f,
+            -1.0f, -1.0f,  1.0f,
+
+            -1.0f,  1.0f, -1.0f,
+             1.0f,  1.0f, -1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+            -1.0f,  1.0f,  1.0f,
+            -1.0f,  1.0f, -1.0f,
+
+            -1.0f, -1.0f, -1.0f,
+            -1.0f, -1.0f,  1.0f,
+             1.0f, -1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+            -1.0f, -1.0f,  1.0f,
+             1.0f, -1.0f,  1.0f
+        };
+        VertexArray skyboxVA;
+        VertexBuffer skyboxVB(skyboxVertices, sizeof(skyboxVertices));
+        VertexBufferLayout skyboxLayout;
+        skyboxLayout.Push<float>(3);
+        skyboxVA.AddBuffer(skyboxVB, skyboxLayout);
         
         //shader generation
         Shader shader("res/shaders/Vertex.vert", "res/shaders/Fragment.frag");
@@ -91,16 +139,26 @@ int main(void)
         Shader gaussianBlurShader("res/shaders/GaussianBlur.vert", "res/shaders/GaussianBlur.frag");      
         Shader blendShader("res/shaders/Blend.vert", "res/shaders/Blend.frag");      
         Shader thresholdShader("res/shaders/Threshold.vert", "res/shaders/Threshold.frag");
-
-        //texture generation
+        Shader skyboxShader("res/shaders/Skybox.vert", "res/shaders/Skybox.frag");
         
+        //texture generation  
         Texture tex001("res/textures/tgziabifa_4K_Albedo.jpg", 0, true);
         Texture tex002("res/textures/tgziabifa_4K_Specular.jpg", 1, true);
         Texture tex004("res/textures/tgziabifa_4K_Normal_LOD0.jpg", 4, false);
-        Texture tex003("res/textures/tgziabifa_4K_Albedo.jpg", 3, true);
-        Texture tex005("res/textures/tgziabifa_4K_Specular.jpg", 5, true);
-        Texture tex006("res/textures/tgziabifa_4K_Normal_LOD0.jpg", 6, false);
-
+        //Texture tex003("res/textures/tgziabifa_4K_Albedo.jpg", 3, true);       
+        //Texture tex005("res/textures/tgziabifa_4K_Specular.jpg", 5, true);
+        //Texture tex006("res/textures/tgziabifa_4K_Normal_LOD0.jpg", 6, false);
+        std::string faces[6] = 
+        {
+            "res/textures/right.jpg",
+                "res/textures/left.jpg",
+                "res/textures/top.jpg",
+                "res/textures/bottom.jpg",
+                "res/textures/front.jpg",
+                "res/textures/back.jpg"
+        };
+        Texture skyboxTexture(faces, 10);
+        
         glm::vec3 positions[10] =
         {{3.0f, 1.0f, -1.0f},
          {0.0f, 0.0f, 1.0f},
@@ -114,6 +172,7 @@ int main(void)
          {1.0f, 2.0f, 0.0f}};       
         float rotation = 0.0f;    
         glm::vec4 environmentColor = glm::vec4(0.5f, 1.0f, 3.0f, 1.0f);                
+                
         glm::vec3 cameraPos = glm::vec3();
         glm::vec3 cameraFront = glm::vec3();
         glm::vec3 cameraUp = glm::vec3();
@@ -139,9 +198,11 @@ int main(void)
             glm::vec3 lightPosition = { 0.0f, 3.0f, 0.0f };
             glm::vec3 lightDirection = { 0.0f, 0.0f, 0.0f };
             glm::vec3 lightColor = { 10.0f, 9.0f, 7.0f };
-            //glm::vec3 lightColor = { 0.0f, 0.0f, 0.0f };
-            glm::vec3 ambientLight = { 0.2f, 0.2f, 0.2f };
+            //glm::vec3 lightColor = { 4.5f, 1.1f, 0.1f };
+            glm::vec3 ambientLight = { 0.03f, 0.07f, 0.1f };
             
+
+
             ////////////////////////////////////OBJECTS     
             /*for (unsigned char i = 0; i < 10; i++)
             {
@@ -179,6 +240,7 @@ int main(void)
 
                 renderer.DrawVB(va, vb, normalShader);
             }*/
+            
             ////////////////////////////////////LIGHT_SOURCE
             pureColor.Bind();
             pureColor.SetUniformMatrix4fv("view", glm::value_ptr(view));
@@ -188,7 +250,7 @@ int main(void)
             model = glm::translate(model, { lightPosition.x, lightPosition.y, lightPosition.z });
             model = glm::scale(model, glm::vec3(0.5f));
             pureColor.SetUniformMatrix4fv("model", glm::value_ptr(model)); 
-            renderer.DrawVB(va2, vb2, pureColor);
+            renderer.DrawVB(cubeVA, cubeVB, pureColor);
             
             ////////////////////////////////////
             normalShader.Bind();
@@ -211,10 +273,20 @@ int main(void)
             normalShader.SetUniform1f("constant", 1.0f);
             normalShader.SetUniform1f("linear", 0.09f);
             normalShader.SetUniform1f("quadratic", 0.032f);
-            renderer.DrawVB(va3, vb3, normalShader);
-
+            renderer.DrawVB(statueVA, statueVB, normalShader);                  
+            
+            ////////////////////////////////////SKYBOX
+            GLCall(glDepthFunc(GL_LEQUAL));
+            skyboxShader.Bind();           
+            skyboxTexture.Bind();
+            skyboxShader.SetUniformMatrix4fv("view", glm::value_ptr(glm::mat4(glm::mat3(view))));
+            skyboxShader.SetUniformMatrix4fv("projection", glm::value_ptr(projection));
+            skyboxShader.SetUniform1i("skybox", skyboxTexture.GetTexSlotID());
+            renderer.DrawVB(skyboxVA, skyboxVB, skyboxShader);
+            GLCall(glDepthFunc(GL_LESS));
             /////////////////////////////////////////////////
-         
+            
+
             /*
             //gaussian blur
             bool horizontal = true;
@@ -231,10 +303,9 @@ int main(void)
                 horizontal = !horizontal;
             }
           */
-
             mainFB.DisableDepthTest();
             mainPostFB.BindDraw(); 
-            renderer.Clear(glm::vec4(0.0f));
+            //renderer.Clear(glm::vec4(0.0f));
             mainPostFB.Blit(frameWidth, frameHeight);                      
             //mainPostFB.Unbind();            
             
@@ -245,10 +316,11 @@ int main(void)
             thresholdShader.Bind();
             thresholdShader.SetUniform1i("screenTexture", textureGaussBlurFB.GetTexSlotID());
             renderer.DrawVB(vaFB, vbFB, thresholdShader);
-
+            
             gaussBlurFB.Bind();
+            
             bool horizontal = true;
-            for (unsigned int i = 0; i < 50; i++)
+            for (unsigned int i = 0; i < 10; i++)
             {                      
                 gaussianBlurShader.Bind();
                 gaussianBlurShader.SetUniform1i("screenTexture", textureGaussBlurFB.GetTexSlotID());
@@ -256,25 +328,24 @@ int main(void)
                 renderer.DrawVB(vaFB, vbFB, gaussianBlurShader);
                 horizontal = !horizontal;
             }
-
-            //}
+            
+            
             //gaussBlurFB.Unbind();
             //renderer.Clear(glm::vec4(0.0f));
-            
+            //
             //mainFB.Bind();
             //bool horizontal = true;
             //for (unsigned int i = 0; i < 10; i++)
             //{
-              //  gaussBlurFB.Bind();
+            //    gaussBlurFB.Bind();
             //    gaussBlurFB.Unbind();
             //    renderer.Clear(glm::vec4(1.0f));
-                //gaussianBlurShader.Bind();
-                //gaussianBlurShader.SetUniform1i("screenTexture", textureGaussBlurFB.GetTexSlotID());                                       
-                //gaussianBlurShader.SetUniform1i("horizontal", true);
-                //renderer.DrawVB(vaFB, vbFB, gaussianBlurShader);
+            //    gaussianBlurShader.Bind();
+            //    gaussianBlurShader.SetUniform1i("screenTexture", textureGaussBlurFB.GetTexSlotID());                                       
+            //    gaussianBlurShader.SetUniform1i("horizontal", true);
+            //    renderer.DrawVB(vaFB, vbFB, gaussianBlurShader);
             //    horizontal = !horizontal;
-            //}
-            
+            //}            
             //renderer.Clear(glm::vec4(0.0f));
 
             mainFB.Unbind();
@@ -284,15 +355,15 @@ int main(void)
             blendShader.SetUniform1i("textureToBlend02", textureGaussBlurFB.GetTexSlotID());           
             renderer.DrawVB(vaFB, vbFB, blendShader);
 
-           ////tone mapping
-           //screenFB.BindDraw();
-           //screenFB.Blit(frameWidth, frameHeight);
-           //screenFB.Unbind();
-           //renderer.Clear(glm::vec4(1.0f));
-           //toneMappingShader.Bind();
-           //toneMappingShader.SetUniform1i("screenTexture", screenFBTexture.GetTexSlotID());
-           //renderer.DrawVB(vaFB, vbFB, toneMappingShader);
-
+            //tone mapping
+            screenFB.BindDraw();
+            screenFB.Blit(frameWidth, frameHeight);
+            screenFB.Unbind();
+            renderer.Clear(glm::vec4(1.0f));
+            toneMappingShader.Bind();
+            toneMappingShader.SetUniform1i("screenTexture", screenFBTexture.GetTexSlotID());
+            renderer.DrawVB(vaFB, vbFB, toneMappingShader);
+         
             renderer.SwapBuffers();        
         }
     }

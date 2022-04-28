@@ -61,15 +61,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders\Geometry.geom">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="res\shaders\NormalMap.geom">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="res\shaders\Shader.glsl">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="res\shaders\Blend.frag">
       <Filter>Fragment Shader</Filter>
     </None>
@@ -88,10 +79,10 @@
     <None Include="res\shaders\ToneMapping.frag">
       <Filter>Fragment Shader</Filter>
     </None>
-    <None Include="res\shaders\Color.vert">
+    <None Include="res\shaders\Blend.vert">
       <Filter>Vertex Shader</Filter>
     </None>
-    <None Include="res\shaders\Blend.vert">
+    <None Include="res\shaders\Color.vert">
       <Filter>Vertex Shader</Filter>
     </None>
     <None Include="res\shaders\GaussianBlur.vert">
@@ -106,11 +97,26 @@
     <None Include="res\shaders\ToneMapping.vert">
       <Filter>Vertex Shader</Filter>
     </None>
+    <None Include="res\shaders\Geometry.geom">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="res\shaders\NormalMap.geom">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="res\shaders\Shader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
     <None Include="res\shaders\Vertex.vert">
       <Filter>Shaders</Filter>
     </None>
     <None Include="res\shaders\Fragment.frag">
       <Filter>Shaders</Filter>
+    </None>
+    <None Include="res\shaders\Skybox.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\Skybox.vert">
+      <Filter>Vertex Shader</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

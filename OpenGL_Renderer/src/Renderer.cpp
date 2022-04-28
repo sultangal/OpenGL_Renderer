@@ -145,13 +145,15 @@ bool Renderer::Init()
     if (glewInit() != GLEW_OK) {
         std::cout << "Glew init error" << std::endl;
     }
-    GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
+
+    GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));   
     GLCall(glEnable(GL_DEPTH_TEST));
     GLCall(glEnable(GL_BLEND));
     GLCall(glEnable(GL_CULL_FACE));
     GLCall(glEnable(GL_MULTISAMPLE));
     GLCall(glCullFace(GL_BACK));
     std::cout << glGetString(GL_VERSION) << std::endl;
+    
 }
 
 int Renderer::GetWidth()

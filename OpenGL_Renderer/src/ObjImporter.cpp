@@ -6,7 +6,11 @@ ObjImporter::ObjImporter(const std::string& filename, bool genTangentCoord)
 {
 	std::ifstream file;
 	file.open(filename);
-	if (file.fail()) return;
+	if (file.fail())
+	{
+		std::cout << "[ObjImporter]::File failed to open!" << std::endl;
+		return;
+	}
 	std::string line;
 	std::vector<Vec3f> positions;
 	std::vector<Vec2f> texCoords;
@@ -127,11 +131,11 @@ ObjImporter::~ObjImporter()
 void* ObjImporter::GetVertecies() 
 {
 	if (m_GenTangentCoord) {
-		void* vecPointer = &m_VerteciesTBN[0];
+		void* vecPointer = m_VerteciesTBN.data();
 		return vecPointer;
 	}
 	else {
-		void* vecPointer = &m_Vertecies[0];
+		void* vecPointer = m_Vertecies.data();
 		return vecPointer;
 	}
 
@@ -148,7 +152,7 @@ unsigned int ObjImporter::GetVertCount()
 
 unsigned int* ObjImporter::GetIndecies()
 {
-	void* vecPointer = &m_Indecies[0];
+	void* vecPointer = m_Indecies.data();
 	return (unsigned int*)vecPointer;
 }
 

@@ -35,7 +35,7 @@ void FrameBuffer::EnableDepthTest() const {
 }
 
 void FrameBuffer::DisableDepthTest() const {
-    GLCall(glEnable(GL_DEPTH_TEST););
+    GLCall(glDisable(GL_DEPTH_TEST););
 }
 
 void FrameBuffer::BindDraw() const {

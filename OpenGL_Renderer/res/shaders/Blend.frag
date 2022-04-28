@@ -9,5 +9,5 @@ void main()
 {
     vec3 texture01 = texture(textureToBlend01, TexCoords).rgb;
     vec3 texture02 = texture(textureToBlend02, TexCoords).rgb;
-   FragColor = vec4(texture02, 1.0);
+    FragColor = vec4(texture01, 1.0);
 }
