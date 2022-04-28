@@ -140,6 +140,7 @@ int main(void)
         Shader blendShader("res/shaders/Blend.vert", "res/shaders/Blend.frag");      
         Shader thresholdShader("res/shaders/Threshold.vert", "res/shaders/Threshold.frag");
         Shader skyboxShader("res/shaders/Skybox.vert", "res/shaders/Skybox.frag");
+        Shader envMapShader("res/shaders/EnvironmentMap.vert", "res/shaders/EnvironmentMap.frag");
         
         //texture generation  
         Texture tex001("res/textures/tgziabifa_4K_Albedo.jpg", 0, true);
@@ -253,6 +254,22 @@ int main(void)
             renderer.DrawVB(cubeVA, cubeVB, pureColor);
             
             ////////////////////////////////////
+
+
+            envMapShader.Bind();
+            envMapShader.SetUniform1i("skybox", skyboxTexture.GetTexSlotID());
+            envMapShader.SetUniform1i("normalMap", tex004.GetTexSlotID());
+            model = glm::mat4(1.0f);
+            model = glm::translate(model, glm::vec3(0.0f, 0.0f, -10.0f));
+            model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
+            rotation += 0.05f;
+            model = glm::scale(model, glm::vec3(1.0f));
+            envMapShader.SetUniformMatrix4fv("model", glm::value_ptr(model));
+            envMapShader.SetUniformMatrix4fv("view", glm::value_ptr(view));
+            envMapShader.SetUniformMatrix4fv("projection", glm::value_ptr(projection));
+            envMapShader.SetUniform3f("viewPos", cameraPos.x, cameraPos.y, cameraPos.z);
+            renderer.DrawVB(statueVA, statueVB, envMapShader);
+            /*
             normalShader.Bind();
             normalShader.SetUniform1i("diffuseMap", tex001.GetTexSlotID());
             normalShader.SetUniform1i("specularTexture", tex002.GetTexSlotID());
@@ -273,7 +290,8 @@ int main(void)
             normalShader.SetUniform1f("constant", 1.0f);
             normalShader.SetUniform1f("linear", 0.09f);
             normalShader.SetUniform1f("quadratic", 0.032f);
-            renderer.DrawVB(statueVA, statueVB, normalShader);                  
+            renderer.DrawVB(statueVA, statueVB, normalShader);   
+            */
             
             ////////////////////////////////////SKYBOX
             GLCall(glDepthFunc(GL_LEQUAL));

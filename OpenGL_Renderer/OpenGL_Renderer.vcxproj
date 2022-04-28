@@ -119,6 +119,8 @@
     <None Include="res\shaders\Blend.vert" />
     <None Include="res\shaders\Color.frag" />
     <None Include="res\shaders\Color.vert" />
+    <None Include="res\shaders\EnvironmentMap.frag" />
+    <None Include="res\shaders\EnvironmentMap.vert" />
     <None Include="res\shaders\Fragment.frag" />
     <None Include="res\shaders\GaussianBlur.frag" />
     <None Include="res\shaders\GaussianBlur.vert" />

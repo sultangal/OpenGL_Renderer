@@ -118,6 +118,12 @@
     <None Include="res\shaders\Skybox.vert">
       <Filter>Vertex Shader</Filter>
     </None>
+    <None Include="res\shaders\EnvironmentMap.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\EnvironmentMap.vert">
+      <Filter>Vertex Shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\VertexBuffer.h">
