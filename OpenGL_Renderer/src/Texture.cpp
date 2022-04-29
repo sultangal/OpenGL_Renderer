@@ -78,10 +78,11 @@ Texture::Texture(std::string faces[6], unsigned char textureSlot)
     for (unsigned int i = 0; i < 6; i++)
     {
         int width, height, nrChannels;
+        stbi_set_flip_vertically_on_load(false);
         unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
         if (data)
         {
-            GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
+            GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
             stbi_image_free(data);
             std::cout << "[Texture][MESSAGE]::Texture with slot: " << (int)m_TextureSlot << " created." << std::endl;
         }

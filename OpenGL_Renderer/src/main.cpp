@@ -86,9 +86,10 @@ int main(void)
             -1.0f,  1.0f, -1.0f,
             -1.0f, -1.0f, -1.0f,
              1.0f, -1.0f, -1.0f,
+            -1.0f,  1.0f, -1.0f,
              1.0f, -1.0f, -1.0f,
              1.0f,  1.0f, -1.0f,
-            -1.0f,  1.0f, -1.0f,
+
 
             -1.0f, -1.0f,  1.0f,
             -1.0f, -1.0f, -1.0f,
@@ -151,12 +152,12 @@ int main(void)
         //Texture tex006("res/textures/tgziabifa_4K_Normal_LOD0.jpg", 6, false);
         std::string faces[6] = 
         {
-            "res/textures/right.jpg",
-                "res/textures/left.jpg",
-                "res/textures/top.jpg",
-                "res/textures/bottom.jpg",
-                "res/textures/front.jpg",
-                "res/textures/back.jpg"
+                "res/textures/px.hdr",
+                "res/textures/nx.hdr",
+                "res/textures/py.hdr",
+                "res/textures/ny.hdr",
+                "res/textures/pz.hdr",
+                "res/textures/nz.hdr"
         };
         Texture skyboxTexture(faces, 10);
         
