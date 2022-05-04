@@ -76,7 +76,7 @@ int main(void)
         cubeLayout.Push<float>(3); cubeLayout.Push<float>(3); cubeLayout.Push<float>(2); cubeLayout.Push<float>(3);
         cubeVA.AddBuffer(cubeVB, cubeLayout);
 
-        ObjImporter objImport3("res/models/statue_hard3.obj", true);
+        ObjImporter objImport3("res/models/statue_hard.obj", true);
         VertexArray statueVA;
         VertexBuffer statueVB(objImport3.GetVertecies(), objImport3.GetVertCount());
         statueVA.AddBuffer(statueVB, layoutTBN);
@@ -142,14 +142,15 @@ int main(void)
         Shader thresholdShader("res/shaders/Threshold.vert", "res/shaders/Threshold.frag");
         Shader skyboxShader("res/shaders/Skybox.vert", "res/shaders/Skybox.frag");
         Shader envMapShader("res/shaders/EnvironmentMap.vert", "res/shaders/EnvironmentMap.frag");
+        Shader pbrShader("res/shaders/PBR_mat.vert", "res/shaders/PBR_mat.frag");
         
         //texture generation  
-        //Texture tex001("res/textures/tgziabifa_4K_Albedo.jpg", 0, true);
-        //Texture tex002("res/textures/tgziabifa_4K_Specular.jpg", 1, true);
-        Texture tex004("res/textures/tgziabifa_4K_Normal_LOD0.jpg", 4, false);
-        //Texture tex003("res/textures/tgziabifa_4K_Albedo.jpg", 3, true);       
-        //Texture tex005("res/textures/tgziabifa_4K_Specular.jpg", 5, true);
-        //Texture tex006("res/textures/tgziabifa_4K_Normal_LOD0.jpg", 6, false);
+        Texture albedo("res/textures/tgziabifa_4K_Albedo.jpg", 0, true);
+        //Texture specular("res/textures/tgziabifa_4K_Specular.jpg", 1, true);
+        Texture normal("res/textures/tgziabifa_4K_Normal_LOD0.jpg", 4, false);
+        Texture metallic("res/textures/tgziabifa_4K_Displacement.jpg", 3, true);       
+        Texture roughness("res/textures/tgziabifa_4K_Roughness.jpg", 5, true);
+        Texture ao("res/textures/tgziabifa_4K_Cavity.jpg", 6, false);
         std::string faces[6] = 
         {
                 "res/textures/px.hdr",
@@ -197,13 +198,9 @@ int main(void)
             projection = glm::perspective(glm::radians(fov), (float)frameWidth / (float)frameHeight, 0.1f, 100.0f);
             glm::mat4 model = glm::mat4(1.0f);
             
-            glm::vec3 lightPosition = { 0.0f, 3.0f, 0.0f };
-            glm::vec3 lightDirection = { 0.0f, 0.0f, 0.0f };
-            glm::vec3 lightColor = { 10.0f, 9.0f, 7.0f };
-            //glm::vec3 lightColor = { 4.5f, 1.1f, 0.1f };
-            glm::vec3 ambientLight = { 0.03f, 0.07f, 0.1f };
-            
-
+            glm::vec3 lightPosition = { 7.0f, 11.0f, 0.0f };
+            glm::vec3 lightColor = { 10.0f, 10.0f, 10.0f };
+            lightColor = lightColor * glm::vec3(200.0);         
 
             ////////////////////////////////////OBJECTS     
             /*for (unsigned char i = 0; i < 10; i++)
@@ -256,7 +253,7 @@ int main(void)
             
             ////////////////////////////////////
 
-
+            /*
             envMapShader.Bind();
             envMapShader.SetUniform1i("skybox", skyboxTexture.GetTexSlotID());
             envMapShader.SetUniform1i("normalMap", tex004.GetTexSlotID());
@@ -270,29 +267,27 @@ int main(void)
             envMapShader.SetUniformMatrix4fv("projection", glm::value_ptr(projection));
             envMapShader.SetUniform3f("viewPos", cameraPos.x, cameraPos.y, cameraPos.z);
             renderer.DrawVB(statueVA, statueVB, envMapShader);
-            /*
-            normalShader.Bind();
-            normalShader.SetUniform1i("diffuseMap", tex001.GetTexSlotID());
-            normalShader.SetUniform1i("specularTexture", tex002.GetTexSlotID());
-            normalShader.SetUniform1i("normalMap", tex004.GetTexSlotID());
+            */
+
+            pbrShader.Bind();
+            pbrShader.SetUniform1i("albedoMap", albedo.GetTexSlotID());
+            pbrShader.SetUniform1i("normalMap", normal.GetTexSlotID());
+            pbrShader.SetUniform1i("metallicMap", metallic.GetTexSlotID());
+            pbrShader.SetUniform1i("roughnessMap", roughness.GetTexSlotID());
+            pbrShader.SetUniform1i("aoMap", ao.GetTexSlotID());
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(0.0f, 0.0f, -10.0f));
             model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
             rotation += 0.05f;
-            model = glm::scale(model, glm::vec3(1.0f));
+            model = glm::scale(model, glm::vec3(1.0f));          
+            pbrShader.SetUniformMatrix4fv("model", glm::value_ptr(model));
+            pbrShader.SetUniformMatrix4fv("view", glm::value_ptr(view));
+            pbrShader.SetUniformMatrix4fv("projection", glm::value_ptr(projection));                     
+            pbrShader.SetUniform3f("camPos", cameraPos.x, cameraPos.y, cameraPos.z);
+            pbrShader.SetUniform3f("lightPos", lightPosition.x, lightPosition.y, lightPosition.z);
+            pbrShader.SetUniform3f("lightColor", lightColor.x, lightColor.y, lightColor.z);
+            renderer.DrawVB(statueVA, statueVB, pbrShader);
             
-            normalShader.SetUniformMatrix4fv("model", glm::value_ptr(model));
-            normalShader.SetUniformMatrix4fv("view", glm::value_ptr(view));
-            normalShader.SetUniformMatrix4fv("projection", glm::value_ptr(projection));                     
-            normalShader.SetUniform3f("viewPos", cameraPos.x, cameraPos.y, cameraPos.z);
-            normalShader.SetUniform3f("lightPos", lightPosition.x, lightPosition.y, lightPosition.z);
-            normalShader.SetUniform3f("lightColor", lightColor.x, lightColor.y, lightColor.z);
-            normalShader.SetUniform3f("ambientLight", ambientLight.x, ambientLight.y, ambientLight.z);
-            normalShader.SetUniform1f("constant", 1.0f);
-            normalShader.SetUniform1f("linear", 0.09f);
-            normalShader.SetUniform1f("quadratic", 0.032f);
-            renderer.DrawVB(statueVA, statueVB, normalShader);   
-            */
             
             ////////////////////////////////////SKYBOX
             GLCall(glDepthFunc(GL_LEQUAL));

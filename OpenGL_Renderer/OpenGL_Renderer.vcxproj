@@ -115,6 +115,8 @@
     <ClCompile Include="src\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="res\shaders\PBR_mat.frag" />
+    <None Include="res\shaders\PBR_mat.vert" />
     <None Include="res\shaders\Blend.frag" />
     <None Include="res\shaders\Blend.vert" />
     <None Include="res\shaders\Color.frag" />

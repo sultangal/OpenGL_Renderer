@@ -124,6 +124,12 @@
     <None Include="res\shaders\EnvironmentMap.vert">
       <Filter>Vertex Shader</Filter>
     </None>
+    <None Include="res\shaders\PBR_mat.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\PBR_mat.vert">
+      <Filter>Vertex Shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\VertexBuffer.h">
