@@ -7,7 +7,7 @@
 GLFWwindow* window;
 const unsigned int frameWidth = 1920;
 const unsigned int frameHeight = 1080;
-const unsigned char aaSamples = 16;
+const unsigned char aaSamples = 32;
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 2.0f, 6.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);

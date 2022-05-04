@@ -54,7 +54,7 @@ Texture::Texture(const unsigned int& frameWidth, const unsigned int& frameHeight
     AssignTexSlot(m_TextureSlot);
     GLCall(glGenTextures(1, &m_RendererID));
     GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
-    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, frameWidth, frameHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, frameWidth, frameHeight, 0, GL_RGB, GL_FLOAT, NULL));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
@@ -68,7 +68,8 @@ Texture::Texture(std::string faces[6], unsigned char textureSlot)
 {      
     GLCall(glGenTextures(1, &m_RendererID));
     AssignTexSlot(m_TextureSlot);
-    GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID));   
+    GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID));  
+    GLCall(glGenerateMipmap(GL_TEXTURE_2D));
     GLCall(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     GLCall(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     GLCall(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
@@ -79,10 +80,10 @@ Texture::Texture(std::string faces[6], unsigned char textureSlot)
     {
         int width, height, nrChannels;
         stbi_set_flip_vertically_on_load(false);
-        unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+        float* data = stbi_loadf(faces[i].c_str(), &width, &height, &nrChannels, 0);
         if (data)
         {
-            GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
+           glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, data);
             stbi_image_free(data);
             std::cout << "[Texture][MESSAGE]::Texture with slot: " << (int)m_TextureSlot << " created." << std::endl;
         }

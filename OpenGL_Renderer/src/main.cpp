@@ -62,12 +62,12 @@ int main(void)
         //----------------------------//
         
         //models import and vertex buffer, vertex array, layout generation for that models
-        ObjImporter objImport("res/models/statue_hard2.obj", true);
-        VertexArray va;
-        VertexBuffer vb(objImport.GetVertecies(), objImport.GetVertCount());       
+        //ObjImporter objImport("res/models/statue_hard2.obj", true);
+        //VertexArray va;
+        //VertexBuffer vb(objImport.GetVertecies(), objImport.GetVertCount());       
         VertexBufferLayout layoutTBN;
         layoutTBN.Push<float>(3); layoutTBN.Push<float>(3); layoutTBN.Push<float>(2); layoutTBN.Push<float>(3); layoutTBN.Push<float>(3); layoutTBN.Push<float>(3);
-        va.AddBuffer(vb, layoutTBN);                        
+        //va.AddBuffer(vb, layoutTBN);                        
         
         ObjImporter objImport2("res/models/cube.obj", false);
         VertexArray cubeVA;
@@ -76,7 +76,7 @@ int main(void)
         cubeLayout.Push<float>(3); cubeLayout.Push<float>(3); cubeLayout.Push<float>(2); cubeLayout.Push<float>(3);
         cubeVA.AddBuffer(cubeVB, cubeLayout);
 
-        ObjImporter objImport3("res/models/statue_hard2.obj", true);
+        ObjImporter objImport3("res/models/statue_hard3.obj", true);
         VertexArray statueVA;
         VertexBuffer statueVB(objImport3.GetVertecies(), objImport3.GetVertCount());
         statueVA.AddBuffer(statueVB, layoutTBN);
@@ -133,7 +133,7 @@ int main(void)
         skyboxVA.AddBuffer(skyboxVB, skyboxLayout);
         
         //shader generation
-        Shader shader("res/shaders/Vertex.vert", "res/shaders/Fragment.frag");
+        //Shader shader("res/shaders/Vertex.vert", "res/shaders/Fragment.frag");
         Shader toneMappingShader("res/shaders/ToneMapping.vert", "res/shaders/ToneMapping.frag");
         Shader normalShader("res/shaders/NormalMap.vert", "res/shaders/NormalMap.frag");
         Shader pureColor("res/shaders/Color.vert", "res/shaders/Color.frag");
@@ -144,8 +144,8 @@ int main(void)
         Shader envMapShader("res/shaders/EnvironmentMap.vert", "res/shaders/EnvironmentMap.frag");
         
         //texture generation  
-        Texture tex001("res/textures/tgziabifa_4K_Albedo.jpg", 0, true);
-        Texture tex002("res/textures/tgziabifa_4K_Specular.jpg", 1, true);
+        //Texture tex001("res/textures/tgziabifa_4K_Albedo.jpg", 0, true);
+        //Texture tex002("res/textures/tgziabifa_4K_Specular.jpg", 1, true);
         Texture tex004("res/textures/tgziabifa_4K_Normal_LOD0.jpg", 4, false);
         //Texture tex003("res/textures/tgziabifa_4K_Albedo.jpg", 3, true);       
         //Texture tex005("res/textures/tgziabifa_4K_Specular.jpg", 5, true);
@@ -305,6 +305,14 @@ int main(void)
             GLCall(glDepthFunc(GL_LESS));
             /////////////////////////////////////////////////
             
+                        //tone mapping
+            screenFB.BindDraw();
+            screenFB.Blit(frameWidth, frameHeight);
+            screenFB.Unbind();
+            renderer.Clear(glm::vec4(1.0f));
+            toneMappingShader.Bind();
+            toneMappingShader.SetUniform1i("screenTexture", screenFBTexture.GetTexSlotID());
+            renderer.DrawVB(vaFB, vbFB, toneMappingShader);
 
             /*
             //gaussian blur
@@ -374,14 +382,7 @@ int main(void)
             blendShader.SetUniform1i("textureToBlend02", textureGaussBlurFB.GetTexSlotID());           
             renderer.DrawVB(vaFB, vbFB, blendShader);
 
-            //tone mapping
-            screenFB.BindDraw();
-            screenFB.Blit(frameWidth, frameHeight);
-            screenFB.Unbind();
-            renderer.Clear(glm::vec4(1.0f));
-            toneMappingShader.Bind();
-            toneMappingShader.SetUniform1i("screenTexture", screenFBTexture.GetTexSlotID());
-            renderer.DrawVB(vaFB, vbFB, toneMappingShader);
+
          
             renderer.SwapBuffers();        
         }
