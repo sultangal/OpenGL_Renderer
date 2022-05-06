@@ -115,6 +115,15 @@
     <ClCompile Include="src\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="res\shaders\background.frag" />
+    <None Include="res\shaders\background.vert" />
+    <None Include="res\shaders\brdf.frag" />
+    <None Include="res\shaders\brdf.vert" />
+    <None Include="res\shaders\cubemap.vert" />
+    <None Include="res\shaders\equirectangular_to_cubemap.frag" />
+    <None Include="res\shaders\irradiance_convolution.frag" />
+    <None Include="res\shaders\pbr.frag" />
+    <None Include="res\shaders\pbr.vert" />
     <None Include="res\shaders\PBR_mat.frag" />
     <None Include="res\shaders\PBR_mat.vert" />
     <None Include="res\shaders\Blend.frag" />
@@ -130,6 +139,7 @@
     <None Include="res\shaders\NormalMap.frag" />
     <None Include="res\shaders\NormalMap.geom" />
     <None Include="res\shaders\NormalMap.vert" />
+    <None Include="res\shaders\prefilter.frag" />
     <None Include="res\shaders\Shader.glsl" />
     <None Include="res\shaders\Threshold.frag" />
     <None Include="res\shaders\Threshold.vert" />

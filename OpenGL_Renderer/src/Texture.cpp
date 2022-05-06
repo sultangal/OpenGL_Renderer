@@ -6,14 +6,30 @@
 #include "stb_image.h"
 #include "ErrorCheck.h"
 
-Texture::Texture(const std::string& filePath, unsigned char textureSlot, bool gammaCorrected)
-    :m_TextureSlot(textureSlot), m_TexType(GL_TEXTURE_2D)
+Texture::Texture(const unsigned int& frameWidth, const unsigned int& frameHeight, int gl_tex_min_filter)
+    :m_RendererID(0), m_TextureSlot(0), m_TexType(GL_TEXTURE_CUBE_MAP)
+{
+    GLCall(glGenTextures(1, &m_RendererID));
+    GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID));
+    for (unsigned int i = 0; i < 6; ++i)
+    {
+        GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, frameWidth, frameHeight, 0, GL_RGB, GL_FLOAT, nullptr));
+    }
+    GLCall(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    GLCall(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+    GLCall(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
+    GLCall(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, gl_tex_min_filter)); // enable pre-filter mipmap sampling (combatting visible dots artifact)
+    GLCall(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+}
+
+Texture::Texture(const std::string& filePath, bool gammaCorrected)
+    :m_TexType(GL_TEXTURE_2D), m_TextureSlot(0)
 {
     stbi_set_flip_vertically_on_load(true);
     int width, height, nrChannels;
     unsigned char* data = stbi_load(filePath.c_str(), &width, &height, &nrChannels, 0);
     GLCall(glGenTextures(1, &m_RendererID));
-    AssignTexSlot(m_TextureSlot);
+    //AssignTexSlot(m_TextureSlot);
     if (data) {
         GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
         //GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
@@ -36,22 +52,23 @@ Texture::Texture(const std::string& filePath, unsigned char textureSlot, bool ga
     stbi_image_free(data);
 }
 
-Texture::Texture(const unsigned int& frameWidth, const unsigned int& frameHeight, const unsigned char& aaSamples, unsigned char textureSlot)
-    :m_TextureSlot(textureSlot), m_TexType(GL_TEXTURE_2D)
+Texture::Texture(const unsigned int& frameWidth, const unsigned int& frameHeight, const unsigned char& aaSamples)
+    :m_TexType(GL_TEXTURE_2D_MULTISAMPLE), m_TextureSlot(0)
 {
-    AssignTexSlot(m_TextureSlot);
+   // AssignTexSlot(m_TextureSlot);
     GLCall(glGenTextures(1, &m_RendererID));
     GLCall(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_RendererID));
     GLCall(glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, aaSamples, GL_RGB32F, frameWidth, frameHeight, GL_TRUE));
     GLCall(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0));
     GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_RendererID, 0));
+
     
 }
 
-Texture::Texture(const unsigned int& frameWidth, const unsigned int& frameHeight, unsigned char textureSlot)
-    :m_TextureSlot(textureSlot), m_TexType(GL_TEXTURE_2D)
+Texture::Texture(const unsigned int& frameWidth, const unsigned int& frameHeight)
+    :m_TexType(GL_TEXTURE_2D), m_TextureSlot(0)
 {
-    AssignTexSlot(m_TextureSlot);
+    //AssignTexSlot(m_TextureSlot);
     GLCall(glGenTextures(1, &m_RendererID));
     GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
     GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, frameWidth, frameHeight, 0, GL_RGB, GL_FLOAT, NULL));
@@ -63,37 +80,34 @@ Texture::Texture(const unsigned int& frameWidth, const unsigned int& frameHeight
     
 }
 
-Texture::Texture(std::string faces[6], unsigned char textureSlot)
-    :m_TextureSlot(textureSlot), m_TexType(GL_TEXTURE_CUBE_MAP)
-{      
-    GLCall(glGenTextures(1, &m_RendererID));
-    AssignTexSlot(m_TextureSlot);
-    GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID));  
-    GLCall(glGenerateMipmap(GL_TEXTURE_2D));
-    GLCall(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-    GLCall(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-    GLCall(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-    GLCall(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-    GLCall(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
-    
-    for (unsigned int i = 0; i < 6; i++)
+Texture::Texture(std::string filePath)
+    :m_RendererID(0), m_TextureSlot(0), m_TexType(GL_TEXTURE_2D)
+{        
+    int width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(true);
+    float* data = stbi_loadf(filePath.c_str(), &width, &height, &nrChannels, 0);
+    if (data)
     {
-        int width, height, nrChannels;
-        stbi_set_flip_vertically_on_load(false);
-        float* data = stbi_loadf(faces[i].c_str(), &width, &height, &nrChannels, 0);
-        if (data)
-        {
-           glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, data);
-            stbi_image_free(data);
-            std::cout << "[Texture][MESSAGE]::Texture with slot: " << (int)m_TextureSlot << " created." << std::endl;
-        }
-        else
-        {
-            std::cout << "[Texture][ERROR]::Failed to load texture at path: " << faces[i] << std::endl;
-            stbi_image_free(data);
-        }
+        GLCall(glGenTextures(1, &m_RendererID));
+        //AssignTexSlot(m_TextureSlot);
+        GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
+        GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, data));
+        GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+        GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+        GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+        GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+       
+        stbi_image_free(data);
+        std::cout << "[Texture][MESSAGE]::Texture with slot: " << (int)m_TextureSlot << " created." << std::endl;
     }
+    else
+    {
+        std::cout << "[Texture][ERROR]::Failed to load texture at path: " << filePath << std::endl;
+        stbi_image_free(data);
+    }   
 }
+
+
 
 void Texture::Bind(unsigned char textureSlot)
 {
@@ -114,6 +128,10 @@ void Texture::Unbind()
     GLCall(glBindTexture(m_TexType, 0));
 }
 
+int Texture::GetID()
+{
+    return m_RendererID;
+}
 unsigned char Texture::GetTexSlotID()
 {
     return m_TextureSlot;

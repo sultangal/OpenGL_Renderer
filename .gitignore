@@ -4,6 +4,8 @@ x64/
 bin/intermediates/
 bin/Win32/
 bin/x64/
+OpenGL_Renderer/OpenGL_Renderer/res/textures/
+OpenGL_Renderer/OpenGL_Renderer/res/models/
 
 
 # Files
@@ -14,3 +16,5 @@ bin/x64/
 *.jpeg
 *.png
 *.tga
+*.rar
+*.hdr

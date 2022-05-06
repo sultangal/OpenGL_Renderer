@@ -11,6 +11,14 @@ RenderBuffer::RenderBuffer(const unsigned int& frameWidth, const unsigned int& f
     GLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_RendererID));
 }
 
+RenderBuffer::RenderBuffer(const unsigned int& frameWidth, const unsigned int& frameHeight)
+{
+    GLCall(glGenRenderbuffers(1, &m_RendererID));
+    GLCall(glBindRenderbuffer(GL_RENDERBUFFER, m_RendererID));
+    GLCall(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, frameWidth, frameHeight));
+    GLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_RendererID));
+}
+
 RenderBuffer::~RenderBuffer() {
     GLCall(glDeleteBuffers(1, &m_RendererID));
 }

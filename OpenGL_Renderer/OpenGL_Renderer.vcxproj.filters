@@ -130,6 +130,36 @@
     <None Include="res\shaders\PBR_mat.vert">
       <Filter>Vertex Shader</Filter>
     </None>
+    <None Include="res\shaders\background.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\brdf.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\equirectangular_to_cubemap.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\pbr.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\prefilter.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\background.vert">
+      <Filter>Vertex Shader</Filter>
+    </None>
+    <None Include="res\shaders\brdf.vert">
+      <Filter>Vertex Shader</Filter>
+    </None>
+    <None Include="res\shaders\cubemap.vert">
+      <Filter>Vertex Shader</Filter>
+    </None>
+    <None Include="res\shaders\pbr.vert">
+      <Filter>Vertex Shader</Filter>
+    </None>
+    <None Include="res\shaders\irradiance_convolution.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\VertexBuffer.h">
