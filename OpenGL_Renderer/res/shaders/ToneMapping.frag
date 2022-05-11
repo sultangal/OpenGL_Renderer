@@ -67,9 +67,10 @@ vec3 Uncharted2ToneMapping(vec3 color)
 void main()
 {
 	vec3 hdrColor = texture(screenTexture, TexCoords).rgb;
-	//vec3 mapped = vec3(1.0) - exp(-hdrColor * 1.0);
-	hdrColor = hdrColor * 5.0;
-	vec3 mapped = tonemapFilmic(hdrColor);
-	//mapped = pow(mapped, vec3( 1.0 / 1.0));
-	FragColor = vec4(mapped, 1.0);
+	////vec3 mapped = vec3(1.0) - exp(-hdrColor * 1.0);
+	//hdrColor = hdrColor * 5.0;
+	//vec3 mapped = tonemapFilmic(hdrColor);
+	////mapped = pow(mapped, vec3( 1.0 / 1.0));
+	////FragColor = vec4(mapped, 1.0);
+	FragColor = vec4( hdrColor,1.0);
 }

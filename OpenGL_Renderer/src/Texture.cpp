@@ -44,7 +44,7 @@ Texture::Texture(const std::string& filePath, bool gammaCorrected)
         GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
         GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
         GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
-        std::cout << "[Texture][MESSAGE]::Texture with slot: " << (int)m_TextureSlot << " created." << std::endl;
+        std::cout << "[Texture][MESSAGE]::Texture : " << filePath << " - created." << std::endl;
     }
     else {
         std::cout << "[Texture][ERROR]::Failed to load texture" << std::endl;
@@ -91,14 +91,14 @@ Texture::Texture(std::string filePath)
         GLCall(glGenTextures(1, &m_RendererID));
         //AssignTexSlot(m_TextureSlot);
         GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
-        GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, data));
+        GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, data));
         GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
         GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
         GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
         GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
        
         stbi_image_free(data);
-        std::cout << "[Texture][MESSAGE]::Texture with slot: " << (int)m_TextureSlot << " created." << std::endl;
+        std::cout << "[Texture][MESSAGE]::Texture : " << filePath << " - created." << std::endl;
     }
     else
     {
@@ -113,6 +113,7 @@ void Texture::Bind(unsigned char textureSlot)
 {
     m_TextureSlot = textureSlot;
     AssignTexSlot(textureSlot);
+    //std::cout << "[Texture][MESSAGE]::Assigned texture slot to: " << (int)textureSlot << std::endl;
     GLCall(glBindTexture(m_TexType, m_RendererID));
 }
 

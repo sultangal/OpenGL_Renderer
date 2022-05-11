@@ -16,14 +16,9 @@ int frameWidth = renderer.GetWidth();
 int frameHeight = renderer.GetHeight();
 const unsigned char aaSamples = renderer.GetAASamples();
 
-unsigned int cubeVAO = 0;
-unsigned int cubeVBO = 0;
 void renderCube()
 {
-    // initialize (if necessary)
-    if (cubeVAO == 0)
-    {
-        float vertices[] = {
+    float vertices[] = {
             // back face
             -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
              1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
@@ -67,53 +62,33 @@ void renderCube()
             -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
             -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left        
         };
-        GLCall(glGenVertexArrays(1, &cubeVAO));
-        GLCall(glGenBuffers(1, &cubeVBO));
-        // fill buffer
-        GLCall(glBindBuffer(GL_ARRAY_BUFFER, cubeVBO));
-        GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW));
-        // link vertex attributes
-        GLCall(glBindVertexArray(cubeVAO));
-        GLCall(glEnableVertexAttribArray(0));
-        GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0));
-        GLCall(glEnableVertexAttribArray(1));
-        GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float))));
-        GLCall(glEnableVertexAttribArray(2));
-        GLCall(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float))));
-        GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
-        GLCall(glBindVertexArray(0));
-    }
-    // render Cube
-     GLCall(glBindVertexArray(cubeVAO));
-     GLCall(glDrawArrays(GL_TRIANGLES, 0, 36));
-     GLCall(glBindVertexArray(0));
+    VertexArray cubeVA;
+    VertexBuffer cubeVB(vertices, sizeof(vertices));
+    VertexBufferLayout cubeLayout;
+    cubeLayout.Push<float>(3); cubeLayout.Push<float>(3); cubeLayout.Push<float>(2);
+    cubeVA.AddBuffer(cubeVB, cubeLayout);
+    cubeVA.Bind();
+    GLCall(glDrawArrays(GL_TRIANGLES, 0, 36));
+    GLCall(glBindVertexArray(0));
 }
 
-unsigned int quadVAO = 0;
-unsigned int quadVBO;
 void renderQuad()
 {
-    if (quadVAO == 0)
-    {
-        float quadVertices[] = {
-            // positions        // texture Coords
-            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
-            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-             1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-        };
-        // setup plane VAO
-        GLCall(glGenVertexArrays(1, &quadVAO));
-        GLCall(glGenBuffers(1, &quadVBO));
-        GLCall(glBindVertexArray(quadVAO));
-        GLCall(glBindBuffer(GL_ARRAY_BUFFER, quadVBO));
-        GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW));
-        GLCall(glEnableVertexAttribArray(0));
-        GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0));
-        GLCall(glEnableVertexAttribArray(1));
-        GLCall(glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))));
-    }
-    GLCall(glBindVertexArray(quadVAO));
+
+    float quadVertices[] = {
+        // positions        // texture Coords
+        -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+        -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+         1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+         1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+    };
+    // setup plane VAO
+    VertexArray quadVA;
+    VertexBuffer quadVB(quadVertices, sizeof(quadVertices));
+    VertexBufferLayout quadLayout;
+    quadLayout.Push<float>(3); quadLayout.Push<float>(2);
+    quadVA.AddBuffer(quadVB, quadLayout);
+    quadVA.Bind();
     GLCall(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
     GLCall(glBindVertexArray(0));
 }
@@ -136,6 +111,12 @@ int main(void)
         screenFBTexture.Bind(10);
         screenFB.CheckComplitness();
         screenFB.Unbind();   
+
+        FrameBuffer captureFB;
+        int BG_Width = 2048;
+        int BG_Height = 2048;        
+        RenderBuffer captureRB(BG_Width, BG_Height);
+        captureFB.CheckComplitness();
 
         //shader generation
         Shader toneMappingShader("res/shaders/ToneMapping.vert", "res/shaders/ToneMapping.frag");
@@ -166,18 +147,17 @@ int main(void)
         backgroundShader.Bind();
         backgroundShader.SetUniform1i("environmentMap", 0);
 
-        glm::vec3 lightPosition = { 7.0f, 11.0f, 0.0f };
+       // glm::vec3 lightPosition = { 7.0f, 11.0f, 0.0f };
+        glm::vec3 lightPosition = { 7.0f, 20.0f, -25.0f };
         glm::vec3 lightColor = { 10.0f, 10.0f, 10.0f };
         lightColor = lightColor * glm::vec3(200.0);
 
-        FrameBuffer captureFB;
-        RenderBuffer captureRB(512, 512);
-        captureFB.CheckComplitness();
+        Texture hdrTexture("res/textures/carb_08_XXL.hdr");
+        Texture envCubemap(BG_Width, BG_Height, GL_LINEAR_MIPMAP_LINEAR);
+        Texture irradianceMap(32, 32, GL_LINEAR);
+        Texture prefilterMap(128, 128, GL_LINEAR_MIPMAP_LINEAR);
 
-        Texture hdrTexture("res/textures/the_sky_is_on_fire_8k.hdr");
-        Texture envCubemap(512, 512, GL_LINEAR_MIPMAP_LINEAR);
-
-        //cubemap projection variables
+        /////////////////////////CUBEMAP PREPARE BEGIN///////////////////////////////////
         glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
         glm::mat4 captureViews[] =
         {
@@ -195,7 +175,7 @@ int main(void)
 
         hdrTexture.Bind(0);
 
-        GLCall(glViewport(0, 0, 512, 512)); // don't forget to configure the viewport to the capture dimensions.
+        GLCall(glViewport(0, 0, BG_Width, BG_Height)); // don't forget to configure the viewport to the capture dimensions.
         captureFB.Bind();
 
         for (unsigned int i = 0; i < 6; ++i)
@@ -209,9 +189,7 @@ int main(void)
         captureFB.Unbind();
 
         envCubemap.Bind();
-        GLCall(glGenerateMipmap(GL_TEXTURE_CUBE_MAP));
-
-        Texture irradianceMap(32, 32, GL_LINEAR);
+        GLCall(glGenerateMipmap(GL_TEXTURE_CUBE_MAP));        
 
         captureFB.Bind();
         captureRB.Bind();
@@ -234,7 +212,8 @@ int main(void)
         }
         captureFB.Unbind();
 
-        Texture prefilterMap(128, 128, GL_LINEAR_MIPMAP_LINEAR);
+        
+        prefilterMap.Bind();
         GLCall(glGenerateMipmap(GL_TEXTURE_CUBE_MAP));
 
         prefilterShader.Bind();
@@ -272,7 +251,7 @@ int main(void)
 
         // pre-allocate enough memory for the LUT texture.
         GLCall(glBindTexture(GL_TEXTURE_2D, brdfLUTTexture));
-        GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 512, 512, 0, GL_RG, GL_FLOAT, 0));
+        GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, BG_Width, BG_Height, 0, GL_RG, GL_FLOAT, 0));
         // be sure to set wrapping mode to GL_CLAMP_TO_EDGE
         GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
         GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
@@ -282,15 +261,17 @@ int main(void)
         // then re-configure capture framebuffer object and render screen-space quad with BRDF shader.
         captureFB.Bind();
         captureRB.Bind();
-        GLCall(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512));
+        GLCall(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, BG_Width, BG_Height));
         GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLUTTexture, 0));
 
-        GLCall(glViewport(0, 0, 512, 512));
+        GLCall(glViewport(0, 0, BG_Width, BG_Height));
         brdfShader.Bind();
         GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
         renderQuad();
 
         captureFB.Unbind();
+        /////////////////////////CUBEMAP PREPARE END///////////////////////////////////
+
 
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 model = glm::mat4(1.0f);
@@ -301,10 +282,6 @@ int main(void)
         pbrShader.SetUniformMatrix4fv("projection", glm::value_ptr(projection));
         backgroundShader.Bind();
         backgroundShader.SetUniformMatrix4fv("projection", glm::value_ptr(projection));
-
-
-
-
         
         //screen quad
         float quadVertices[] = {   // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
@@ -393,15 +370,12 @@ int main(void)
         //texture generation  
         Texture albedo("res/textures/tgziabifa_4K_Albedo.jpg", true);
         Texture normal("res/textures/tgziabifa_4K_Normal_LOD0.jpg", false);
-        Texture metallic("res/textures/tgziabifa_4K_Displacement.jpg", true);
-        Texture roughness("res/textures/tgziabifa_4K_Roughness.jpg", true);
+        //Texture metallic("res/textures/tgziabifa_4K_Displacement.jpg", true);
+        Texture roughness("res/textures/tgziabifa_4K_Specular.jpg", true);
         Texture ao("res/textures/tgziabifa_4K_Cavity.jpg", false);
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        //glfwGetFramebufferSize(window, &scrWidth, &scrHeight);
         GLCall(glViewport(0, 0, frameWidth, frameHeight));
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         float rotation = 0.0f;
         glm::vec4 environmentColor = glm::vec4(0.5f, 1.0f, 3.0f, 1.0f);
         glm::vec3 cameraPos = glm::vec3();
@@ -414,9 +388,10 @@ int main(void)
             cameraPos = renderer.GetCameraPos();
             cameraFront = renderer.GetCameraFront();
             cameraUp = renderer.GetCameraUp();
-            mainFB.Bind();           
+
+            //mainFB.Bind();  
             renderer.Clear(environmentColor);
-            mainFB.EnableDepthTest();
+           // mainFB.EnableDepthTest();
 
             irradianceMap.Bind(0);
             prefilterMap.Bind(1);
@@ -431,13 +406,12 @@ int main(void)
             pbrShader.SetUniform3f("camPos", cameraPos.x, cameraPos.y, cameraPos.z);           
             albedo.Bind(3);
             normal.Bind(4);
-            metallic.Bind(5);
+            //metallic.Bind(5);
             roughness.Bind(6);
-            ao.Bind(7);                       
+            ao.Bind(7);
             pbrShader.SetUniform1i("albedoMap", albedo.GetTexSlotID());
-            pbrShader.SetUniform1i("normalMap", normal.GetTexSlotID());
-            pbrShader.SetUniform1i("metallicMap", metallic.GetTexSlotID());
             pbrShader.SetUniform1i("roughnessMap", roughness.GetTexSlotID());
+            pbrShader.SetUniform1i("normalMap", normal.GetTexSlotID());
             pbrShader.SetUniform1i("aoMap", ao.GetTexSlotID());
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(0.0f, 0.0f, -10.0f));
@@ -461,9 +435,9 @@ int main(void)
             pureColor.SetUniformMatrix4fv("model", glm::value_ptr(model));
             renderer.DrawVB(cubeVA, cubeVB, pureColor);
             ////////////////////////////////////
-
+            
             ////////////////////////////////////SKYBOX
-            GLCall(glDepthFunc(GL_LEQUAL));
+            //GLCall(glDepthFunc(GL_LEQUAL));
             backgroundShader.Bind();
             backgroundShader.SetUniformMatrix4fv("view", glm::value_ptr(view));
             envCubemap.Bind(0);
@@ -474,17 +448,17 @@ int main(void)
             //skyboxShader.SetUniformMatrix4fv("projection", glm::value_ptr(projection));
             //skyboxShader.SetUniform1i("skybox", skyboxTexture.GetTexSlotID());
             //renderer.DrawVB(skyboxVA, skyboxVB, skyboxShader);
-            GLCall(glDepthFunc(GL_LESS));
+            //GLCall(glDepthFunc(GL_LESS));
             /////////////////////////////////////////////////
 
-            //tone mapping           
-            screenFB.BindDraw();
-            screenFB.Blit(frameWidth, frameHeight);
-            screenFB.Unbind();
-            renderer.Clear(glm::vec4(1.0f));
-            toneMappingShader.Bind();         
-            toneMappingShader.SetUniform1i("screenTexture", 2);
-            renderer.DrawVB(vaFB, vbFB, toneMappingShader);
+            ////tone mapping           
+            //screenFB.BindDraw();
+            //screenFB.Blit(frameWidth, frameHeight);
+            //screenFB.Unbind();
+            //renderer.Clear(glm::vec4(1.0f));
+            //toneMappingShader.Bind();         
+            //toneMappingShader.SetUniform1i("screenTexture", screenFBTexture.GetTexSlotID());
+            //renderer.DrawVB(vaFB, vbFB, toneMappingShader);
 
             renderer.SwapBuffers();
         }

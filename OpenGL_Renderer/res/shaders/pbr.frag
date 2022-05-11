@@ -23,6 +23,13 @@ uniform vec3 lightColors[1];
 uniform vec3 camPos;
 
 const float PI = 3.14159265359;
+
+vec3 tonemapFilmic(vec3 x) {
+  vec3 X = max(vec3(0.0), x - 0.004);
+  vec3 result = (X * (6.2 * X + 0.5)) / (X * (6.2 * X + 1.7) + 0.06);
+  return pow(result, vec3(2.2));
+}
+
 // ----------------------------------------------------------------------------
 // Easy trick to get tangent-normals to world-space to keep PBR code simplified.
 // Don't worry if you don't get what's going on; you generally want to do normal 
@@ -45,6 +52,7 @@ vec3 getNormalFromMap()
     return normalize(TBN * tangentNormal);
 }
 // ----------------------------------------------------------------------------
+
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
     float a = roughness*roughness;
@@ -93,11 +101,12 @@ vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
 void main()
 {		
     // material properties
-    //vec3 albedo = pow(texture(albedoMap, TexCoords).rgb, vec3(2.2));
-    vec3 albedo = pow(vec3(1.0, 0.71, 0.29), vec3(2.2));
+    vec3 albedo = pow(texture(albedoMap, TexCoords).rgb, vec3(1.0));
+   //albedo = vec3(0.77, 0.25, 0.0);
+    albedo = pow(vec3(0.77, 0.78, 0.78), vec3(2.2));
     float metallic = 1.0f;
     float roughness = texture(roughnessMap, TexCoords).r;
-    roughness = 0.0f;
+    roughness = 0.2f;
     float ao = texture(aoMap, TexCoords).r;
        
     // input lighting data
@@ -112,7 +121,7 @@ void main()
 
     // reflectance equation
     vec3 Lo = vec3(0.0);
-    for(int i = 0; i < 4; ++i) 
+    for(int i = 0; i < 1; ++i) 
     {
         // calculate per-light radiance
         vec3 L = normalize(lightPositions[i] - WorldPos);
@@ -120,7 +129,7 @@ void main()
         float distance = length(lightPositions[i] - WorldPos);
         float attenuation = 1.0 / (distance * distance);
         vec3 radiance = lightColors[i] * attenuation;
-
+    
         // Cook-Torrance BRDF
         float NDF = DistributionGGX(N, H, roughness);   
         float G   = GeometrySmith(N, V, L, roughness);    
@@ -143,7 +152,7 @@ void main()
             
         // scale light by NdotL
         float NdotL = max(dot(N, L), 0.0);        
-
+    
         // add to outgoing radiance Lo
         Lo += (kD * albedo / PI + specular) * radiance * NdotL; // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
     }   
@@ -168,10 +177,12 @@ void main()
     
     vec3 color = ambient + Lo;
 
-    // HDR tonemapping
-    color = color / (color + vec3(1.0));
-    // gamma correct
-    color = pow(color, vec3(1.0/2.2)); 
+    //// HDR tonemapping
+    //color = color / (color + vec3(1.0));
+    //// gamma correct
+    //color = pow(color, vec3(1.0/2.2)); 
 
-    FragColor = vec4(color , 1.0);
+	color = color * 5.0;
+	vec3 mapped = tonemapFilmic(color);
+	FragColor = vec4(mapped, 1.0);
 }
