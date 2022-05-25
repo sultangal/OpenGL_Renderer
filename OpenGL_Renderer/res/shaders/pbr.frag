@@ -101,16 +101,20 @@ vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
 void main()
 {		
     // material properties
-    vec3 albedo = pow(texture(albedoMap, TexCoords).rgb, vec3(1.0));
-   //albedo = vec3(0.77, 0.25, 0.0);
-    albedo = pow(vec3(0.77, 0.78, 0.78), vec3(2.2));
+    //vec3 albedo = pow(texture(albedoMap, TexCoords).rgb, vec3(1.0));
+    //vec3 albedo = vec3(1.0, 0.40, 0.0);
+    //vec3 albedo = vec3(1.0, 0.71, 0.29);
+    //vec3 albedo = vec3(0.95, 0.54, 0.64);
+    vec3 albedo = vec3(0.56, 0.57, 0.58);
     float metallic = 1.0f;
-    float roughness = texture(roughnessMap, TexCoords).r;
-    roughness = 0.2f;
+    //float metallic = texture(metallicMap, TexCoords).r;
+    //float roughness = 1.0f-texture(roughnessMap, TexCoords).r;
+    float roughness = 0.0f;
     float ao = texture(aoMap, TexCoords).r;
        
     // input lighting data
     vec3 N = getNormalFromMap();
+    //vec3 N = Normal;
     vec3 V = normalize(camPos - WorldPos);
     vec3 R = reflect(-V, N); 
 
@@ -173,15 +177,12 @@ void main()
     vec2 brdf  = texture(brdfLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
     vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
+    //vec3 ambient = (kD * diffuse + specular);
     vec3 ambient = (kD * diffuse + specular) * ao;
     
     vec3 color = ambient + Lo;
 
-    //// HDR tonemapping
-    //color = color / (color + vec3(1.0));
-    //// gamma correct
-    //color = pow(color, vec3(1.0/2.2)); 
-
+    // tonemapping
 	color = color * 5.0;
 	vec3 mapped = tonemapFilmic(color);
 	FragColor = vec4(mapped, 1.0);

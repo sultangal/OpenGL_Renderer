@@ -60,7 +60,7 @@ ObjImporter::ObjImporter(const std::string& filename, bool genTangentCoord)
 	}
 	for (unsigned int i = 0; i < m_Indecies.size(); i++)
 	{
-		if (genTangentCoord) {
+		if (m_GenTangentCoord) {
 
 			Vec3f edge1 = positions[m_Indecies[i].y] - positions[m_Indecies[i].x];
 			Vec3f edge2 = positions[m_Indecies[i].z] - positions[m_Indecies[i].x];
@@ -104,19 +104,19 @@ ObjImporter::ObjImporter(const std::string& filename, bool genTangentCoord)
 		else {
 			m_Vertecies.push_back({
 				{ positions[m_Indecies[i].x] },
-				{ colorr[rand() % 3] },
+				//{ colorr[rand() % 3] },
 				{ texCoords[texCoordsIndex[i].x] },
 				{ normals[normalIndex[i].x] } });
 
 			m_Vertecies.push_back({
 				{ positions[m_Indecies[i].y] },
-				{ colorr[rand() % 3] },
+				//{ colorr[rand() % 3] },
 				{ texCoords[texCoordsIndex[i].y] },
 				{ normals[normalIndex[i].y] } });
 
 			m_Vertecies.push_back({
 				{ positions[m_Indecies[i].z] },
-				{ colorr[rand() % 3] },
+				//{ colorr[rand() % 3] },
 				{ texCoords[texCoordsIndex[i].z] },
 				{ normals[normalIndex[i].z] } });
 		}

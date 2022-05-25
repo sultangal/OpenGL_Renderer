@@ -39,7 +39,7 @@ struct Vec2f {
 
 struct Vertex {
 	Vec3f pos;
-	Vec3f color;
+	//Vec3f color;
 	Vec2f texCoord;
 	Vec3f normal;
 };

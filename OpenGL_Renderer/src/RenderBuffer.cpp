@@ -27,7 +27,11 @@ void RenderBuffer::Bind() const {
     GLCall(glBindRenderbuffer(GL_RENDERBUFFER, m_RendererID));
 }
 
-void RenderBuffer::BindDefaultFB() const {
+void RenderBuffer::Unbind() const {
     GLCall(glBindRenderbuffer(GL_RENDERBUFFER, 0));
+}
+
+void RenderBuffer::ConfigureRBStorage(const unsigned int& width, const unsigned int& height) {
+    GLCall(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height));
 }
 

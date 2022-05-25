@@ -10,71 +10,73 @@
 #include "Texture.h"
 #include "FrameBuffer.h"
 #include "RenderBuffer.h"
+#include "PerformanceMeasure.h"
 
 Renderer renderer;
 int frameWidth = renderer.GetWidth();
 int frameHeight = renderer.GetHeight();
 const unsigned char aaSamples = renderer.GetAASamples();
+int BG_Width = 2048;
+int BG_Height = 2048;
 
-void renderCube()
+void inline RenderCube()
 {
+    GLCall(glCullFace(GL_FRONT));
     float vertices[] = {
             // back face
-            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-             1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-             1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right         
-             1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-            -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
+            -1.0f, -1.0f, -1.0f, // bottom-left
+             1.0f,  1.0f, -1.0f, // top-right
+             1.0f, -1.0f, -1.0f, // bottom-right         
+             1.0f,  1.0f, -1.0f, // top-right
+            -1.0f, -1.0f, -1.0f, // bottom-left
+            -1.0f,  1.0f, -1.0f, // top-left
             // front face
-            -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-             1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
-             1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-             1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-            -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // top-left
-            -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
+            -1.0f, -1.0f,  1.0f, // bottom-left
+             1.0f, -1.0f,  1.0f, // bottom-right
+             1.0f,  1.0f,  1.0f, // top-right
+             1.0f,  1.0f,  1.0f, // top-right
+            -1.0f,  1.0f,  1.0f, // top-left
+            -1.0f, -1.0f,  1.0f, // bottom-left
             // left face
-            -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
-            -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-left
-            -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
-            -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
-            -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-right
-            -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
+            -1.0f,  1.0f,  1.0f, // top-right
+            -1.0f,  1.0f, -1.0f, // top-left
+            -1.0f, -1.0f, -1.0f, // bottom-left
+            -1.0f, -1.0f, -1.0f, // bottom-left
+            -1.0f, -1.0f,  1.0f, // bottom-right
+            -1.0f,  1.0f,  1.0f, // top-right
             // right face
-             1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-             1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-             1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right         
-             1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-             1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-             1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left     
+             1.0f,  1.0f,  1.0f, // top-left
+             1.0f, -1.0f, -1.0f, // bottom-right
+             1.0f,  1.0f, -1.0f, // top-right         
+             1.0f, -1.0f, -1.0f, // bottom-right
+             1.0f,  1.0f,  1.0f, // top-left
+             1.0f, -1.0f,  1.0f, // bottom-left     
             // bottom face
-            -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-             1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
-             1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-             1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-            -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // bottom-right
-            -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
+            -1.0f, -1.0f, -1.0f, // top-right
+             1.0f, -1.0f, -1.0f, // top-left
+             1.0f, -1.0f,  1.0f, // bottom-left
+             1.0f, -1.0f,  1.0f, // bottom-left
+            -1.0f, -1.0f,  1.0f, // bottom-right
+            -1.0f, -1.0f, -1.0f, // top-right
             // top face
-            -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-             1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-             1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right     
-             1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-            -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-            -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left        
+            -1.0f,  1.0f, -1.0f, // top-left
+             1.0f,  1.0f , 1.0f, // bottom-right
+             1.0f,  1.0f, -1.0f, // top-right     
+             1.0f,  1.0f,  1.0f, // bottom-right
+            -1.0f,  1.0f, -1.0f, // top-left
+            -1.0f,  1.0f,  1.0f  // bottom-left        
         };
     VertexArray cubeVA;
     VertexBuffer cubeVB(vertices, sizeof(vertices));
     VertexBufferLayout cubeLayout;
-    cubeLayout.Push<float>(3); cubeLayout.Push<float>(3); cubeLayout.Push<float>(2);
+    cubeLayout.Push<float>(3);
     cubeVA.AddBuffer(cubeVB, cubeLayout);
-    cubeVA.Bind();
-    GLCall(glDrawArrays(GL_TRIANGLES, 0, 36));
-    GLCall(glBindVertexArray(0));
+    renderer.DrawVB(cubeVA, cubeVB);
+    GLCall(glCullFace(GL_BACK));
 }
 
-void renderQuad()
+void inline RenderQuad()
 {
-
     float quadVertices[] = {
         // positions        // texture Coords
         -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
@@ -88,37 +90,141 @@ void renderQuad()
     VertexBufferLayout quadLayout;
     quadLayout.Push<float>(3); quadLayout.Push<float>(2);
     quadVA.AddBuffer(quadVB, quadLayout);
-    quadVA.Bind();
-    GLCall(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
-    GLCall(glBindVertexArray(0));
+    renderer.DrawVB_Strip(quadVA, quadVB);
+}
+
+void inline PrepareIBL(Texture& hdrTEX, Texture& envCubeMAP, Texture& irradianceMAP, Texture& prefilterMAP, Texture& brdfLutMAP, FrameBuffer& captureFB, RenderBuffer& captureRB)
+{
+
+    Shader equirectangularToCubemapShader("res/shaders/cubemap.vert", "res/shaders/equirectangular_to_cubemap.frag");
+    Shader irradianceShader("res/shaders/cubemap.vert", "res/shaders/irradiance_convolution.frag");
+    Shader prefilterShader("res/shaders/cubemap.vert", "res/shaders/prefilter.frag");
+    Shader brdfShader("res/shaders/brdf.vert", "res/shaders/brdf.frag");
+    /////////////////////////CUBEMAP PREPARE BEGIN///////////////////////////////////
+    glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+    glm::mat4 captureViews[] =
+    {
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+    };
+
+    equirectangularToCubemapShader.Bind();
+    equirectangularToCubemapShader.SetUniform1i("equirectangularMap", 0);
+    equirectangularToCubemapShader.SetUniformMatrix4fv("projection", glm::value_ptr(captureProjection));
+
+    hdrTEX.Bind(0);
+
+    renderer.ConfigureViewport(BG_Width, BG_Height); // don't forget to configure the viewport to the capture dimensions.        
+    captureFB.Bind();
+
+    for (unsigned int i = 0; i < 6; ++i)
+    {
+        equirectangularToCubemapShader.SetUniformMatrix4fv("view", glm::value_ptr(captureViews[i]));
+        envCubeMAP.AttachCubeTexToCurrFB(i, 0);
+        renderer.Clear();
+        RenderCube();
+    }
+
+    envCubeMAP.Bind();
+    envCubeMAP.GenMipMap();
+
+    captureRB.Bind();
+    captureRB.ConfigureRBStorage(32, 32);
+
+    irradianceShader.Bind();
+    irradianceShader.SetUniform1i("environmentMap", 0);
+    irradianceShader.SetUniformMatrix4fv("projection", glm::value_ptr(captureProjection));
+    envCubeMAP.Bind(0);
+
+    renderer.ConfigureViewport(32, 32); // don't forget to configure the viewport to the capture dimensions.       
+
+    for (unsigned int i = 0; i < 6; ++i)
+    {
+        irradianceShader.SetUniformMatrix4fv("view", glm::value_ptr(captureViews[i]));
+        irradianceMAP.AttachCubeTexToCurrFB(i, 0);
+        renderer.Clear();
+        RenderCube();
+    }
+
+    prefilterMAP.Bind();
+    prefilterMAP.GenMipMap();
+
+    prefilterShader.Bind();
+    prefilterShader.SetUniform1i("environmentMap", 0);
+    prefilterShader.SetUniformMatrix4fv("projection", glm::value_ptr(captureProjection));
+    envCubeMAP.Bind(0);
+
+    unsigned int maxMipLevels = 5;
+    for (unsigned int mip = 0; mip < maxMipLevels; ++mip)
+    {
+        // reisze framebuffer according to mip-level size.
+        unsigned int mipWidth = static_cast<unsigned int>(128 * std::pow(0.5, mip));
+        unsigned int mipHeight = static_cast<unsigned int>(128 * std::pow(0.5, mip));
+        captureRB.Bind();
+        captureRB.ConfigureRBStorage(mipWidth, mipHeight);
+        renderer.ConfigureViewport(mipWidth, mipHeight);
+
+        float roughness = (float)mip / (float)(maxMipLevels - 1);
+        prefilterShader.SetUniform1f("roughness", roughness);
+
+        for (unsigned int i = 0; i < 6; ++i)
+        {
+            prefilterShader.SetUniformMatrix4fv("view", glm::value_ptr(captureViews[i]));
+            prefilterMAP.AttachCubeTexToCurrFB(i, mip);
+            renderer.Clear();
+            RenderCube();
+        }
+    }
+
+    captureRB.Bind();
+    captureRB.ConfigureRBStorage(BG_Width, BG_Height);
+    brdfLutMAP.AttachTexToCurrFB();
+
+    renderer.ConfigureViewport(BG_Width, BG_Height);
+    brdfShader.Bind();
+    renderer.Clear();
+    RenderQuad();
+    captureFB.Unbind();
+    /////////////////////////CUBEMAP PREPARE END///////////////////////////////////
+
 }
 
 int main(void)
 {
-
     if (!renderer.Init()) return -1;
     {
-        //----------------------------//
+        PerformanceMeasure measure("Starting time");
+
         FrameBuffer mainFB;
-        Texture textureMainFB(frameWidth, frameHeight, (unsigned char)aaSamples);
-        textureMainFB.Bind(11);
+        Texture mainFBMap(frameWidth, frameHeight, (unsigned char)aaSamples);
+        mainFBMap.Bind(11);
         RenderBuffer mainRB(frameWidth, frameHeight, aaSamples);
         mainFB.CheckComplitness();
         mainFB.Unbind();
 
         FrameBuffer screenFB;
-        Texture screenFBTexture(frameWidth, frameHeight, (unsigned char)aaSamples);
-        screenFBTexture.Bind(10);
+        Texture screenFBMap(frameWidth, frameHeight, (unsigned char)aaSamples);
+        screenFBMap.Bind(10);
         screenFB.CheckComplitness();
         screenFB.Unbind();   
 
+        //--IBL preparation--//
         FrameBuffer captureFB;
-        int BG_Width = 2048;
-        int BG_Height = 2048;        
         RenderBuffer captureRB(BG_Width, BG_Height);
-        captureFB.CheckComplitness();
+        captureFB.CheckComplitness();        
+        Texture hdrTEX("res/textures/carb_23_XXL.hdr");
+        Texture envCubeMAP(BG_Width, BG_Height, true);
+        Texture irradianceMAP(32, 32, false);
+        Texture prefilterMAP(128, 128, true);
+        Texture brdfLutMAP(BG_Width, BG_Height);
+        PrepareIBL(hdrTEX, envCubeMAP, irradianceMAP, prefilterMAP, brdfLutMAP, captureFB, captureRB);
+        //----------------------------//
 
-        //shader generation
+        //--Shader generation--//
         Shader toneMappingShader("res/shaders/ToneMapping.vert", "res/shaders/ToneMapping.frag");
         Shader normalShader("res/shaders/NormalMap.vert", "res/shaders/NormalMap.frag");
         Shader pureColor("res/shaders/Color.vert", "res/shaders/Color.frag");
@@ -137,141 +243,17 @@ int main(void)
         pbrShader.SetUniform1i("normalMap", 4);
         pbrShader.SetUniform1i("metallicMap", 5);
         pbrShader.SetUniform1i("roughnessMap", 6);
-        pbrShader.SetUniform1i("aoMap", 7);
-        Shader equirectangularToCubemapShader("res/shaders/cubemap.vert", "res/shaders/equirectangular_to_cubemap.frag");
-        Shader irradianceShader("res/shaders/cubemap.vert", "res/shaders/irradiance_convolution.frag");
-        Shader prefilterShader("res/shaders/cubemap.vert", "res/shaders/prefilter.frag");
-        Shader brdfShader("res/shaders/brdf.vert", "res/shaders/brdf.frag");
-        Shader backgroundShader("res/shaders/background.vert", "res/shaders/background.frag");
+        pbrShader.SetUniform1i("aoMap", 7);       
 
+        Shader backgroundShader("res/shaders/background.vert", "res/shaders/background.frag");
         backgroundShader.Bind();
         backgroundShader.SetUniform1i("environmentMap", 0);
+        //----------------------------//
 
-       // glm::vec3 lightPosition = { 7.0f, 11.0f, 0.0f };
+        //glm::vec3 lightPosition = { 7.0f, 11.0f, 0.0f };
         glm::vec3 lightPosition = { 7.0f, 20.0f, -25.0f };
         glm::vec3 lightColor = { 10.0f, 10.0f, 10.0f };
-        lightColor = lightColor * glm::vec3(200.0);
-
-        Texture hdrTexture("res/textures/carb_08_XXL.hdr");
-        Texture envCubemap(BG_Width, BG_Height, GL_LINEAR_MIPMAP_LINEAR);
-        Texture irradianceMap(32, 32, GL_LINEAR);
-        Texture prefilterMap(128, 128, GL_LINEAR_MIPMAP_LINEAR);
-
-        /////////////////////////CUBEMAP PREPARE BEGIN///////////////////////////////////
-        glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
-        glm::mat4 captureViews[] =
-        {
-            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
-            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
-            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-            glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
-        };
-
-        equirectangularToCubemapShader.Bind();
-        equirectangularToCubemapShader.SetUniform1i("equirectangularMap", 0);
-        equirectangularToCubemapShader.SetUniformMatrix4fv("projection", glm::value_ptr(captureProjection));
-
-        hdrTexture.Bind(0);
-
-        GLCall(glViewport(0, 0, BG_Width, BG_Height)); // don't forget to configure the viewport to the capture dimensions.
-        captureFB.Bind();
-
-        for (unsigned int i = 0; i < 6; ++i)
-        {
-            equirectangularToCubemapShader.SetUniformMatrix4fv("view", glm::value_ptr(captureViews[i]));
-            GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubemap.GetID(), 0));
-            GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-
-            renderCube();
-        }
-        captureFB.Unbind();
-
-        envCubemap.Bind();
-        GLCall(glGenerateMipmap(GL_TEXTURE_CUBE_MAP));        
-
-        captureFB.Bind();
-        captureRB.Bind();
-        GLCall(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 32, 32));
-
-        irradianceShader.Bind();
-        irradianceShader.SetUniform1i("environmentMap", 0);
-        irradianceShader.SetUniformMatrix4fv("projection", glm::value_ptr(captureProjection));
-        envCubemap.Bind(0);
-
-        GLCall(glViewport(0, 0, 32, 32)); // don't forget to configure the viewport to the capture dimensions.
-        captureFB.Bind();
-
-        for (unsigned int i = 0; i < 6; ++i)
-        {
-            irradianceShader.SetUniformMatrix4fv("view", glm::value_ptr(captureViews[i]));
-            GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, irradianceMap.GetID(), 0));
-            GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-            renderCube();
-        }
-        captureFB.Unbind();
-
-        
-        prefilterMap.Bind();
-        GLCall(glGenerateMipmap(GL_TEXTURE_CUBE_MAP));
-
-        prefilterShader.Bind();
-        prefilterShader.SetUniform1i("environmentMap", 0);
-        prefilterShader.SetUniformMatrix4fv("projection", glm::value_ptr(captureProjection));
-        envCubemap.Bind(0);
-
-        captureFB.Bind();
-
-        unsigned int maxMipLevels = 5;
-        for (unsigned int mip = 0; mip < maxMipLevels; ++mip)
-        {
-            // reisze framebuffer according to mip-level size.
-            unsigned int mipWidth = static_cast<unsigned int>(128 * std::pow(0.5, mip));
-            unsigned int mipHeight = static_cast<unsigned int>(128 * std::pow(0.5, mip));
-            captureRB.Bind();
-            GLCall(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight));
-            GLCall(glViewport(0, 0, mipWidth, mipHeight));
-
-            float roughness = (float)mip / (float)(maxMipLevels - 1);
-            prefilterShader.SetUniform1f("roughness", roughness);
-            for (unsigned int i = 0; i < 6; ++i)
-            {
-                prefilterShader.SetUniformMatrix4fv("view", glm::value_ptr(captureViews[i]));
-                GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, prefilterMap.GetID(), mip));
-
-                GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-                renderCube();
-            }
-        }
-        captureFB.Unbind();
-
-        unsigned int brdfLUTTexture;
-        GLCall(glGenTextures(1, &brdfLUTTexture));
-
-        // pre-allocate enough memory for the LUT texture.
-        GLCall(glBindTexture(GL_TEXTURE_2D, brdfLUTTexture));
-        GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, BG_Width, BG_Height, 0, GL_RG, GL_FLOAT, 0));
-        // be sure to set wrapping mode to GL_CLAMP_TO_EDGE
-        GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-        GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-        GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-        GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-
-        // then re-configure capture framebuffer object and render screen-space quad with BRDF shader.
-        captureFB.Bind();
-        captureRB.Bind();
-        GLCall(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, BG_Width, BG_Height));
-        GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, brdfLUTTexture, 0));
-
-        GLCall(glViewport(0, 0, BG_Width, BG_Height));
-        brdfShader.Bind();
-        GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-        renderQuad();
-
-        captureFB.Unbind();
-        /////////////////////////CUBEMAP PREPARE END///////////////////////////////////
-
+        lightColor = lightColor * glm::vec3(0.0);
 
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 model = glm::mat4(1.0f);
@@ -283,7 +265,7 @@ int main(void)
         backgroundShader.Bind();
         backgroundShader.SetUniformMatrix4fv("projection", glm::value_ptr(projection));
         
-        //screen quad
+        //--Screen quad--//
         float quadVertices[] = {   // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
             // positions   // texCoords
             -1.0f,  1.0f,  0.0f, 1.0f,
@@ -301,102 +283,53 @@ int main(void)
         vaFB.AddBuffer(vbFB, layoutFB);
         //----------------------------//
         
-        //models import and vertex buffer, vertex array, layout generation for that models 
-        
-        ObjImporter objImport2("res/models/cube.obj", false);
+        //--Models import and vertex buffer, vertex array, layout generation for that models--//         
+        ObjImporter objCube("res/models/cube.obj", false);
         VertexArray cubeVA;
-        VertexBuffer cubeVB(objImport2.GetVertecies(), objImport2.GetVertCount());
+        VertexBuffer cubeVB(objCube.GetVertecies(), objCube.GetVertCount());
         VertexBufferLayout cubeLayout;
         cubeLayout.Push<float>(3); cubeLayout.Push<float>(3); cubeLayout.Push<float>(2); cubeLayout.Push<float>(3);
         cubeVA.AddBuffer(cubeVB, cubeLayout);
         
-        ObjImporter objImport3("res/models/statue_hard.obj", true);
+        ObjImporter objStatue("res/models/statue_hard.obj", false);
         VertexArray statueVA;
-        VertexBuffer statueVB(objImport3.GetVertecies(), objImport3.GetVertCount());
-        VertexBufferLayout layoutTBN;
-        layoutTBN.Push<float>(3); layoutTBN.Push<float>(3); layoutTBN.Push<float>(2); layoutTBN.Push<float>(3); layoutTBN.Push<float>(3); layoutTBN.Push<float>(3);
-        statueVA.AddBuffer(statueVB, layoutTBN);
+        VertexBuffer statueVB(objStatue.GetVertecies(), objStatue.GetVertCount());
+        VertexBufferLayout statueLayout;
+        statueLayout.Push<float>(3);  statueLayout.Push<float>(2); statueLayout.Push<float>(3); 
+        statueVA.AddBuffer(statueVB, statueLayout);
+        //----------------------------//
 
-        float skyboxVertices[] = {
-            // back face
-            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-             1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-             1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // bottom-right         
-             1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // top-right
-            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // bottom-left
-            -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // top-left
-            // front face
-            -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-             1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // bottom-right
-             1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-             1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // top-right
-            -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // top-left
-            -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // bottom-left
-            // left face
-            -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
-            -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-left
-            -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
-            -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-left
-            -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-right
-            -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-right
-            // right face
-             1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-             1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-             1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // top-right         
-             1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // bottom-right
-             1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // top-left
-             1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // bottom-left     
-            // bottom face
-            -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-             1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // top-left
-             1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-             1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // bottom-left
-            -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // bottom-right
-            -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // top-right
-            // top face
-            -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-             1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-             1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // top-right     
-             1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // bottom-right
-            -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // top-left
-            -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // bottom-left        
-        };
-        VertexArray skyboxVA;
-        VertexBuffer skyboxVB(skyboxVertices, sizeof(skyboxVertices));
-        VertexBufferLayout skyboxLayout;
-        skyboxLayout.Push<float>(3); skyboxLayout.Push<float>(3); skyboxLayout.Push<float>(2);
-        skyboxVA.AddBuffer(skyboxVB, skyboxLayout);
-
-        //texture generation  
-        Texture albedo("res/textures/tgziabifa_4K_Albedo.jpg", true);
-        Texture normal("res/textures/tgziabifa_4K_Normal_LOD0.jpg", false);
+        //--Texture generation--//  
+        Texture albedoTEX("res/textures/tgziabifa_4K_Albedo.jpg", true);
+        Texture normalTEX("res/textures/tgziabifa_4K_Normal_LOD0.jpg", false);
         //Texture metallic("res/textures/tgziabifa_4K_Displacement.jpg", true);
-        Texture roughness("res/textures/tgziabifa_4K_Specular.jpg", true);
-        Texture ao("res/textures/tgziabifa_4K_Cavity.jpg", false);
-
-        GLCall(glViewport(0, 0, frameWidth, frameHeight));
+        Texture roughnessTEX("res/textures/tgziabifa_4K_Roughness.jpg", true);
+        Texture aoTEX("res/textures/tgziabifa_4K_Cavity.jpg", false); 
+        //----------------------------//
 
         float rotation = 0.0f;
         glm::vec4 environmentColor = glm::vec4(0.5f, 1.0f, 3.0f, 1.0f);
         glm::vec3 cameraPos = glm::vec3();
         glm::vec3 cameraFront = glm::vec3();
         glm::vec3 cameraUp = glm::vec3();
-        //MAIN LOOP
+        renderer.ConfigureViewport(frameWidth, frameHeight);
+
+        measure.Stop();
+        //MAIN LOOP//
         while (renderer.IsWindowClosed())
         {
             renderer.ProceedInput();
             cameraPos = renderer.GetCameraPos();
             cameraFront = renderer.GetCameraFront();
             cameraUp = renderer.GetCameraUp();
-
+            
             //mainFB.Bind();  
             renderer.Clear(environmentColor);
-           // mainFB.EnableDepthTest();
+            //mainFB.EnableDepthTest();
 
-            irradianceMap.Bind(0);
-            prefilterMap.Bind(1);
-            GLCall(glActiveTexture(GL_TEXTURE2));
-            GLCall(glBindTexture(GL_TEXTURE_2D, brdfLUTTexture));
+            irradianceMAP.Bind(0);
+            prefilterMAP.Bind(1);
+            brdfLutMAP.Bind(2);
 
             /* Render here */
             pbrShader.Bind();
@@ -404,15 +337,15 @@ int main(void)
             view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);   
             pbrShader.SetUniformMatrix4fv("view", glm::value_ptr(view));
             pbrShader.SetUniform3f("camPos", cameraPos.x, cameraPos.y, cameraPos.z);           
-            albedo.Bind(3);
-            normal.Bind(4);
+            albedoTEX.Bind(3);
+            normalTEX.Bind(4);
             //metallic.Bind(5);
-            roughness.Bind(6);
-            ao.Bind(7);
-            pbrShader.SetUniform1i("albedoMap", albedo.GetTexSlotID());
-            pbrShader.SetUniform1i("roughnessMap", roughness.GetTexSlotID());
-            pbrShader.SetUniform1i("normalMap", normal.GetTexSlotID());
-            pbrShader.SetUniform1i("aoMap", ao.GetTexSlotID());
+            roughnessTEX.Bind(6);
+            aoTEX.Bind(7);
+            pbrShader.SetUniform1i("albedoMap", albedoTEX.GetTexSlotID());
+            pbrShader.SetUniform1i("roughnessMap", roughnessTEX.GetTexSlotID());
+            pbrShader.SetUniform1i("normalMap", normalTEX.GetTexSlotID());
+            pbrShader.SetUniform1i("aoMap", aoTEX.GetTexSlotID());
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(0.0f, 0.0f, -10.0f));
             model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -424,7 +357,7 @@ int main(void)
             pbrShader.SetUniform3f("lightColors[0]", lightColor.x, lightColor.y, lightColor.z);
             renderer.DrawVB(statueVA, statueVB, pbrShader);
 
-            //////////////////////////////////LIGHT_SOURCE
+            //--Light source--//
             pureColor.Bind();
             pureColor.SetUniformMatrix4fv("view", glm::value_ptr(view));
             pureColor.SetUniformMatrix4fv("projection", glm::value_ptr(projection));
@@ -434,14 +367,14 @@ int main(void)
             model = glm::scale(model, glm::vec3(0.5f));
             pureColor.SetUniformMatrix4fv("model", glm::value_ptr(model));
             renderer.DrawVB(cubeVA, cubeVB, pureColor);
-            ////////////////////////////////////
+            //----------------------------//
             
-            ////////////////////////////////////SKYBOX
+            //--Skybox--//
             //GLCall(glDepthFunc(GL_LEQUAL));
             backgroundShader.Bind();
             backgroundShader.SetUniformMatrix4fv("view", glm::value_ptr(view));
-            envCubemap.Bind(0);
-            renderCube();
+            envCubeMAP.Bind(0);
+            RenderCube();
             //skyboxShader.Bind();
             //skyboxTexture.Bind();
             //skyboxShader.SetUniformMatrix4fv("view", glm::value_ptr(glm::mat4(glm::mat3(view))));
@@ -449,9 +382,9 @@ int main(void)
             //skyboxShader.SetUniform1i("skybox", skyboxTexture.GetTexSlotID());
             //renderer.DrawVB(skyboxVA, skyboxVB, skyboxShader);
             //GLCall(glDepthFunc(GL_LESS));
-            /////////////////////////////////////////////////
+            //----------------------------//
 
-            ////tone mapping           
+            //--Tone mapping--//           
             //screenFB.BindDraw();
             //screenFB.Blit(frameWidth, frameHeight);
             //screenFB.Unbind();
@@ -459,7 +392,7 @@ int main(void)
             //toneMappingShader.Bind();         
             //toneMappingShader.SetUniform1i("screenTexture", screenFBTexture.GetTexSlotID());
             //renderer.DrawVB(vaFB, vbFB, toneMappingShader);
-
+            //----------------------------//
             renderer.SwapBuffers();
         }
     }

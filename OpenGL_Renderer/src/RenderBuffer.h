@@ -8,6 +8,7 @@ public:
 	RenderBuffer(const unsigned int& frameWidth, const unsigned int& frameHeight);
 	~RenderBuffer();
 	void Bind() const;
-	void BindDefaultFB() const;
+	void Unbind() const;
+	void ConfigureRBStorage(const unsigned int& width, const unsigned int& height);
 };
 

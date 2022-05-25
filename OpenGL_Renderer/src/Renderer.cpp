@@ -5,8 +5,8 @@
 #include "ErrorCheck.h"
 
 GLFWwindow* window;
-const unsigned int frameWidth = 1920;
-const unsigned int frameHeight = 1080;
+const unsigned int frameWidth = 2560;
+const unsigned int frameHeight = 1440;
 const unsigned char aaSamples = 32;
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 2.0f, -3.0f);
@@ -128,7 +128,7 @@ bool Renderer::Init()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_SAMPLES, 64);
+    glfwWindowHint(GLFW_SAMPLES, aaSamples);
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(frameWidth, frameHeight, "OpenGL", NULL, NULL);
     if (!window) {
@@ -150,7 +150,7 @@ bool Renderer::Init()
     GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));   
     GLCall(glEnable(GL_DEPTH_TEST));
     GLCall(glEnable(GL_BLEND));
-    //GLCall(glEnable(GL_CULL_FACE));
+    GLCall(glEnable(GL_CULL_FACE));
     GLCall(glEnable(GL_MULTISAMPLE));
     GLCall(glDepthFunc(GL_LEQUAL));
     GLCall(glCullFace(GL_BACK));
@@ -163,17 +163,14 @@ int Renderer::GetWidth()
 {
     return frameWidth;
 }
-
 int Renderer::GetHeight()
 {
     return frameHeight;
 }
-
 int Renderer::GetAASamples()
 {
     return aaSamples;
 }
-
 glm::vec3 Renderer::GetCameraPos()
 {
     return cameraPos;
@@ -196,6 +193,11 @@ bool Renderer::IsWindowClosed()
     if (!glfwWindowShouldClose(window)) return true;
     else 
         return false;
+}
+
+void Renderer::ConfigureViewport(unsigned int width, unsigned int height)
+{
+    GLCall(glViewport(0, 0, width, height));
 }
 
 void Renderer::Terminate()
@@ -238,6 +240,10 @@ void Renderer::Clear(glm::vec4 color){
     GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));   
 }
 
+void Renderer::Clear() {
+    GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+}
+
 void Renderer::DrawIB(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const {
     shader.Bind();
     va.Bind();
@@ -249,6 +255,18 @@ void Renderer::DrawVB(const VertexArray& va, const VertexBuffer& vb, const Shade
     shader.Bind();
     va.Bind();
     GLCall(glDrawArrays(GL_TRIANGLES, 0, vb.GetSize()/sizeof(float)));
+}
+
+void Renderer::DrawVB(const VertexArray& va, const VertexBuffer& vb) const {
+    va.Bind();
+    GLCall(glDrawArrays(GL_TRIANGLES, 0, vb.GetSize() / sizeof(float)));
+    GLCall(glBindVertexArray(0));
+}
+
+void Renderer::DrawVB_Strip(const VertexArray& va, const VertexBuffer& vb) const {
+    va.Bind();
+    GLCall(glDrawArrays(GL_TRIANGLE_STRIP, 0, vb.GetSize() / sizeof(float)));
+    GLCall(glBindVertexArray(0));
 }
 
 
