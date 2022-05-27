@@ -5,9 +5,9 @@
 #include "ErrorCheck.h"
 
 GLFWwindow* window;
-const unsigned int frameWidth = 2560;
-const unsigned int frameHeight = 1440;
-const unsigned char aaSamples = 32;
+const unsigned int frameWidth = 1920;
+const unsigned int frameHeight = 1080;
+const unsigned char aaSamples = 16;
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 2.0f, -3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -144,14 +144,14 @@ bool Renderer::Init()
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     if (glewInit() != GLEW_OK) {
-        std::cout << "Glew init error" << std::endl;
+        std::cout << "[GLEW][ERROR]::Initialisation error!" << std::endl;
     }
 
     GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));   
     GLCall(glEnable(GL_DEPTH_TEST));
     GLCall(glEnable(GL_BLEND));
     GLCall(glEnable(GL_CULL_FACE));
-    GLCall(glEnable(GL_MULTISAMPLE));
+    //GLCall(glEnable(GL_MULTISAMPLE));
     GLCall(glDepthFunc(GL_LEQUAL));
     GLCall(glCullFace(GL_BACK));
     GLCall(glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS));

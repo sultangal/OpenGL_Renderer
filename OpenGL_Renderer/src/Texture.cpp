@@ -10,6 +10,7 @@ Texture::Texture(const unsigned int& cubeMapWidth, const unsigned int& cubeMapHe
     :m_TextureID(0), m_TextureSlot(0), m_TexType(GL_TEXTURE_CUBE_MAP)
 {
     GLCall(glGenTextures(1, &m_TextureID));
+    AssignTexSlot(m_TextureSlot);
     GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, m_TextureID));
     for (unsigned int i = 0; i < 6; ++i)
     {
@@ -34,7 +35,7 @@ Texture::Texture(const std::string& filePath, bool gammaCorrected)
     int width, height, nrChannels;
     unsigned char* data = stbi_load(filePath.c_str(), &width, &height, &nrChannels, 0);
     GLCall(glGenTextures(1, &m_TextureID));
-    //AssignTexSlot(m_TextureSlot);
+    AssignTexSlot(m_TextureSlot);
     if (data) {
         GLCall(glBindTexture(GL_TEXTURE_2D, m_TextureID));
         //GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
@@ -52,7 +53,7 @@ Texture::Texture(const std::string& filePath, bool gammaCorrected)
         std::cout << "[Texture][MESSAGE]::Texture : " << filePath << " - created." << std::endl;
     }
     else {
-        std::cout << "[Texture][ERROR]::Failed to load texture" << std::endl;
+        std::cout << red << "[Texture][ERROR]::Failed to load texture" << white << std::endl;
     }
     stbi_image_free(data);
 }
@@ -61,11 +62,19 @@ Texture::Texture(const unsigned int& frameWidth, const unsigned int& frameHeight
     :m_TexType(GL_TEXTURE_2D_MULTISAMPLE), m_TextureSlot(0)
 {
     GLCall(glGenTextures(1, &m_TextureID));
+    AssignTexSlot(m_TextureSlot);
     GLCall(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_TextureID));
     GLCall(glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, aaSamples, GL_RGB32F, frameWidth, frameHeight, GL_TRUE));
     GLCall(glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0));
     GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_TextureID, 0));
 
+    //GLCall(glGenTextures(1, &m_TextureID));
+    //AssignTexSlot(m_TextureSlot);
+    //GLCall(glBindTexture(GL_TEXTURE_2D, m_TextureID));
+    //GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, frameWidth, frameHeight, 0, GL_RGB, GL_FLOAT, 0));
+    //GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+    //GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    //GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_TextureID, 0));
     
 }
 
@@ -73,6 +82,7 @@ Texture::Texture(const unsigned int& frameWidth, const unsigned int& frameHeight
     :m_TexType(GL_TEXTURE_2D), m_TextureSlot(0)
 {
     GLCall(glGenTextures(1, &m_TextureID));
+    AssignTexSlot(m_TextureSlot);
     GLCall(glBindTexture(GL_TEXTURE_2D, m_TextureID));
     GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, frameWidth, frameHeight, 0, GL_RG, GL_FLOAT, NULL));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
@@ -81,6 +91,21 @@ Texture::Texture(const unsigned int& frameWidth, const unsigned int& frameHeight
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
     GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_TextureID, 0));
     
+}
+
+Texture::Texture(const unsigned int& frameWidth, const unsigned int& frameHeight, bool b, float f)
+    :m_TexType(GL_TEXTURE_2D), m_TextureSlot(0)
+{
+    GLCall(glGenTextures(1, &m_TextureID));
+    AssignTexSlot(m_TextureSlot);
+    GLCall(glBindTexture(GL_TEXTURE_2D, m_TextureID));
+    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, frameWidth, frameHeight, 0, GL_RGB, GL_FLOAT, NULL));
+    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+    GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_TextureID, 0));
+
 }
 
 Texture::Texture(std::string filePath)
@@ -92,7 +117,7 @@ Texture::Texture(std::string filePath)
     if (data)
     {
         GLCall(glGenTextures(1, &m_TextureID));
-        //AssignTexSlot(m_TextureSlot);
+        AssignTexSlot(m_TextureSlot);
         GLCall(glBindTexture(GL_TEXTURE_2D, m_TextureID));
         GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, data));
         GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
@@ -105,7 +130,7 @@ Texture::Texture(std::string filePath)
     }
     else
     {
-        std::cout << "[Texture][ERROR]::Failed to load texture at path: " << filePath << std::endl;
+        std::cout << red << "[Texture][ERROR]::Failed to load texture at path: " << white << filePath << std::endl;
         stbi_image_free(data);
     }   
 }
@@ -140,7 +165,7 @@ unsigned char Texture::GetTexSlotID()
 }
 
 void Texture::AssignTexSlot(unsigned char textureSlot) {
-    if (textureSlot > 11) std::cout << "[Texture][WARNNIG]::glActiveTexture don't have so many slots! Assigning default texture slot." << std::endl;
+    if (textureSlot > 11) std::cout << yellow << "[Texture][WARNNIG]::glActiveTexture don't have so many slots! Assigning default texture slot." << white << std::endl;
     switch (textureSlot)
     {
     case 0:

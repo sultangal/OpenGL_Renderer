@@ -9,6 +9,11 @@ RenderBuffer::RenderBuffer(const unsigned int& frameWidth, const unsigned int& f
     GLCall(glRenderbufferStorageMultisample(GL_RENDERBUFFER, aaSamples, GL_DEPTH24_STENCIL8, frameWidth, frameHeight));
     GLCall(glBindRenderbuffer(GL_RENDERBUFFER, 0));
     GLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_RendererID));
+
+    //GLCall(glGenRenderbuffers(1, &m_RendererID));
+    //GLCall(glBindRenderbuffer(GL_RENDERBUFFER, m_RendererID));
+    //GLCall(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, frameWidth, frameHeight));
+    //GLCall(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_RendererID));
 }
 
 RenderBuffer::RenderBuffer(const unsigned int& frameWidth, const unsigned int& frameHeight)

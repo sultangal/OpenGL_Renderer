@@ -1,5 +1,6 @@
 #version 330 core
 out vec4 FragColor;
+
 in vec2 TexCoords;
 in vec3 WorldPos;
 in vec3 Normal;
@@ -24,17 +25,7 @@ uniform vec3 camPos;
 
 const float PI = 3.14159265359;
 
-vec3 tonemapFilmic(vec3 x) {
-  vec3 X = max(vec3(0.0), x - 0.004);
-  vec3 result = (X * (6.2 * X + 0.5)) / (X * (6.2 * X + 1.7) + 0.06);
-  return pow(result, vec3(2.2));
-}
-
 // ----------------------------------------------------------------------------
-// Easy trick to get tangent-normals to world-space to keep PBR code simplified.
-// Don't worry if you don't get what's going on; you generally want to do normal 
-// mapping the usual way for performance anways; I do plan make a note of this 
-// technique somewhere later in the normal mapping tutorial.
 vec3 getNormalFromMap()
 {
     vec3 tangentNormal = texture(normalMap, TexCoords).xyz * 2.0 - 1.0;
@@ -44,7 +35,7 @@ vec3 getNormalFromMap()
     vec2 st1 = dFdx(TexCoords);
     vec2 st2 = dFdy(TexCoords);
 
-    vec3 N   = normalize(Normal);
+    vec3 N  = normalize(Normal);
     vec3 T  = normalize(Q1*st2.t - Q2*st1.t);
     vec3 B  = normalize(cross(N, T));
     mat3 TBN = mat3(T, B, N);
@@ -102,14 +93,14 @@ void main()
 {		
     // material properties
     //vec3 albedo = pow(texture(albedoMap, TexCoords).rgb, vec3(1.0));
-    //vec3 albedo = vec3(1.0, 0.40, 0.0);
-    //vec3 albedo = vec3(1.0, 0.71, 0.29);
+    //vec3 albedo = vec3(1.0, 0.30, 0.0);
+    vec3 albedo = vec3(1.0, 0.71, 0.29);
     //vec3 albedo = vec3(0.95, 0.54, 0.64);
-    vec3 albedo = vec3(0.56, 0.57, 0.58);
+    //vec3 albedo = vec3(0.56, 0.57, 0.58);
     float metallic = 1.0f;
     //float metallic = texture(metallicMap, TexCoords).r;
-    //float roughness = 1.0f-texture(roughnessMap, TexCoords).r;
-    float roughness = 0.0f;
+    float roughness = 1.0f-texture(roughnessMap, TexCoords).r;
+    //float roughness = 0.0f;
     float ao = texture(aoMap, TexCoords).r;
        
     // input lighting data
@@ -143,7 +134,7 @@ void main()
         float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001; // + 0.0001 to prevent divide by zero
         vec3 specular = numerator / denominator;
         
-         // kS is equal to Fresnel
+        // kS is equal to Fresnel
         vec3 kS = F;
         // for energy conservation, the diffuse and specular light can't
         // be above 1.0 (unless the surface emits light); to preserve this
@@ -177,13 +168,9 @@ void main()
     vec2 brdf  = texture(brdfLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
     vec3 specular = prefilteredColor * (F * brdf.x + brdf.y);
 
-    //vec3 ambient = (kD * diffuse + specular);
     vec3 ambient = (kD * diffuse + specular) * ao;
     
     vec3 color = ambient + Lo;
 
-    // tonemapping
-	color = color * 5.0;
-	vec3 mapped = tonemapFilmic(color);
-	FragColor = vec4(mapped, 1.0);
+    FragColor = vec4(color, 1.0);
 }

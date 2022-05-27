@@ -15,6 +15,7 @@ public:
 	Texture(std::string hdrPath);
 	Texture(const unsigned int& frameWidth, const unsigned int& frameHeight, const unsigned char& aaSamples);
 	Texture(const unsigned int& frameWidth, const unsigned int& frameHeight);
+	Texture(const unsigned int& frameWidth, const unsigned int& frameHeight, bool b, float f);
 	~Texture();
 
 	int GetID();

@@ -46,7 +46,7 @@ struct Vertex {
 
 struct VertexTBN {
 	Vec3f pos;
-	Vec3f color;
+	//Vec3f color;
 	Vec2f texCoord;
 	Vec3f normal;
 	Vec3f tangent;

@@ -21,7 +21,7 @@ public:
 
 		auto duration = end - start;
 		double sec = duration * 0.001 * 0.001;
-		std::cout << m_Description << ": " << duration << "us (" << sec << "sec)\n";
+		std::cout << green << m_Description << ": " << duration << "us (" << sec << "sec)\n"<< white;
 	}
 private:
 	std::chrono::time_point<std::chrono::high_resolution_clock> m_StartTimepoint;

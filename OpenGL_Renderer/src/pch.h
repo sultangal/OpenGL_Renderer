@@ -11,6 +11,7 @@
 #include <future>
 #include <unordered_map>
 #include <chrono>
+#include "ConsoleColor.h"
 
 
 #include <glm/glm.hpp>

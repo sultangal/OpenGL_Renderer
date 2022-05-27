@@ -22,7 +22,8 @@ void FrameBuffer::Blit(const unsigned int& frameWidth, const unsigned int& frame
 
 void FrameBuffer::CheckComplitness() const {
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+        std::cout << red << "[FRAMEBUFFER][ERROR]::Framebuffer is not complete!" << white <<std::endl;
+    
 }
 
 

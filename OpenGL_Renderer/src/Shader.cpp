@@ -105,7 +105,7 @@ ShaderProgramSource Shader::ParseShader(const std::string& vertexPath, const std
 		return { srcV, srcF };
 	}
 	else {
-		std::cout << "[Shader][ERROR]::Problem with shader file! Returning empty shader source." << std::endl;
+		std::cout << red << "[Shader][ERROR]::Problem with shader file! Returning empty shader source." << white << std::endl;
 		return { srcV, srcF };
 	}
 	
@@ -136,7 +136,7 @@ ShaderProgramSource Shader::ParseShader(const std::string& vertexPath, const std
 		return { srcV, srcF, srcG };
 	}
 	else {
-		std::cout << "[Shader][ERROR]::Problem with shader file! Returning empty shader source." << std::endl;
+		std::cout << red << "[Shader][ERROR]::Problem with shader file! Returning empty shader source." << white << std::endl;
 		return { srcV, srcF, srcG };
 	}
 }
@@ -156,9 +156,9 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 		GLCall(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
 		char* message = (char*)_malloca(length * sizeof(char));
 		GLCall(glGetShaderInfoLog(id, length, &length, message));
-		std::cout << "[Shader][ERROR]::Faled to compile " <<
+		std::cout << red << "[Shader][ERROR]::Faled to compile " <<
 			(type == GL_VERTEX_SHADER ? "vertex" : "fragment")
-			<< " shader!" << std::endl;
+			<< " shader!" << white << std::endl;
 		std::cout << message << std::endl;
 		GLCall(glDeleteShader(id));
 		return 0;
@@ -210,7 +210,7 @@ unsigned int Shader::GetUniformLocation(const std::string& name)
 
 	int location = glGetUniformLocation(m_RendererID, name.c_str());
 	if (location == -1)
-		std::cout << "[Shader][WARNNING]::Uniform '" << name << "' does not exist!" << std::endl;
+		std::cout << yellow << "[Shader][WARNNING]::Uniform '" << name << "' does not exist!" << white << std::endl;
 	m_UniformLocationCashe[name] = location;
 	return location;
 }

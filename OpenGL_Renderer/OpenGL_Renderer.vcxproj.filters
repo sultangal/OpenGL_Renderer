@@ -276,5 +276,8 @@
     <ClInclude Include="src\PerformanceMeasure.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ConsoleColor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

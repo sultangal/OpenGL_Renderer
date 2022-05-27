@@ -3,7 +3,8 @@ out vec4 FragColor;
   
 in vec2 TexCoords;
 
-uniform sampler2D screenTexture;
+uniform sampler2D screenTexture01;
+uniform sampler2D screenTexture02;
 
 vec3 aces(vec3 x) {
   const float a = 2.51;
@@ -66,11 +67,14 @@ vec3 Uncharted2ToneMapping(vec3 color)
 
 void main()
 {
-	vec3 hdrColor = texture(screenTexture, TexCoords).rgb;
+	vec3 hdrColor01 = texture(screenTexture01, TexCoords).rgb;
+	vec3 hdrColor02 = texture(screenTexture02, TexCoords).rgb;
 	////vec3 mapped = vec3(1.0) - exp(-hdrColor * 1.0);
-	//hdrColor = hdrColor * 5.0;
-	//vec3 mapped = tonemapFilmic(hdrColor);
+	vec3 result = hdrColor01+hdrColor02;
+	//vec3 result = hdrColor01;
+	result = result * 5.0;
+	vec3 mapped = tonemapFilmic(result);
 	////mapped = pow(mapped, vec3( 1.0 / 1.0));
 	////FragColor = vec4(mapped, 1.0);
-	FragColor = vec4( hdrColor,1.0);
+	FragColor = vec4(mapped,1.0);
 }
