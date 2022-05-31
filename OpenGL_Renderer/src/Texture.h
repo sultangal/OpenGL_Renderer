@@ -25,6 +25,7 @@ public:
 	unsigned char GetTexSlotID();
 	void AttachTexToCurrFB();
 	void AttachCubeTexToCurrFB(unsigned int i, unsigned int mipmapLevel);
+	void AttachTexToCurrFB(unsigned int mipmapLevel);
 	void GenMipMap();
 };
 

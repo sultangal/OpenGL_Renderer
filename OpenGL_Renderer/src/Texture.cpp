@@ -100,12 +100,13 @@ Texture::Texture(const unsigned int& frameWidth, const unsigned int& frameHeight
     AssignTexSlot(m_TextureSlot);
     GLCall(glBindTexture(GL_TEXTURE_2D, m_TextureID));
     GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, frameWidth, frameHeight, 0, GL_RGB, GL_FLOAT, NULL));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+    GLCall(glGenerateMipmap(GL_TEXTURE_2D));
+    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 13));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
     GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_TextureID, 0));
-
 }
 
 Texture::Texture(std::string filePath)
@@ -213,6 +214,11 @@ void Texture::AssignTexSlot(unsigned char textureSlot) {
 void Texture::AttachTexToCurrFB()
 {
     GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_TexType, m_TextureID, 0));
+}
+
+void Texture::AttachTexToCurrFB(unsigned int mipmapLevel)
+{
+    GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_TexType, m_TextureID, mipmapLevel));
 }
 
 void Texture::AttachCubeTexToCurrFB(unsigned int i, unsigned int mipmapLevel)

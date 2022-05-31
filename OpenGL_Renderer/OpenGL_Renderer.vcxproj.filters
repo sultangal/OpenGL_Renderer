@@ -160,6 +160,12 @@
     <None Include="res\shaders\irradiance_convolution.frag">
       <Filter>Fragment Shader</Filter>
     </None>
+    <None Include="res\shaders\Exposure.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\Exposure.vert">
+      <Filter>Vertex Shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\VertexBuffer.h">

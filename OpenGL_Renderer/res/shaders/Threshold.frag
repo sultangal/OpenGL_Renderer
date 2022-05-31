@@ -11,8 +11,9 @@ vec3 levelRange(vec3 color, float minInput, float maxInput){
 void main()
 {
     vec3 tex = texture(screenTexture, TexCoords).rgb;
-    tex = levelRange(tex, 0.5f, 5.0f);
+    tex = levelRange(tex, 20.0f, 50.0f);
     FragColor = vec4(tex.rgb, 1.0);
+    //FragColor = vec4(tex.rgb, 1.0);
     //float brightness = dot(tex.rgb, vec3(0.2126, 0.7152, 0.0722));
     //if(brightness > 1.0)
     //    FragColor = vec4(tex.rgb, 1.0);

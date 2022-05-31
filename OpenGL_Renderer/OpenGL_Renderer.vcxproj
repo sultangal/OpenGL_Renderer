@@ -121,6 +121,8 @@
     <None Include="res\shaders\brdf.vert" />
     <None Include="res\shaders\cubemap.vert" />
     <None Include="res\shaders\equirectangular_to_cubemap.frag" />
+    <None Include="res\shaders\Exposure.frag" />
+    <None Include="res\shaders\Exposure.vert" />
     <None Include="res\shaders\irradiance_convolution.frag" />
     <None Include="res\shaders\pbr.frag" />
     <None Include="res\shaders\pbr.vert" />
