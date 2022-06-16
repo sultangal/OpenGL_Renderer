@@ -59,6 +59,12 @@
     <ClCompile Include="src\RenderBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Bloom_Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FrameBufferTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\Blend.frag">
@@ -76,25 +82,16 @@
     <None Include="res\shaders\Threshold.frag">
       <Filter>Fragment Shader</Filter>
     </None>
-    <None Include="res\shaders\ToneMapping.frag">
+    <None Include="res\shaders\Compositing.frag">
       <Filter>Fragment Shader</Filter>
     </None>
-    <None Include="res\shaders\Blend.vert">
-      <Filter>Vertex Shader</Filter>
-    </None>
     <None Include="res\shaders\Color.vert">
-      <Filter>Vertex Shader</Filter>
-    </None>
-    <None Include="res\shaders\GaussianBlur.vert">
       <Filter>Vertex Shader</Filter>
     </None>
     <None Include="res\shaders\NormalMap.vert">
       <Filter>Vertex Shader</Filter>
     </None>
-    <None Include="res\shaders\Threshold.vert">
-      <Filter>Vertex Shader</Filter>
-    </None>
-    <None Include="res\shaders\ToneMapping.vert">
+    <None Include="res\shaders\ScreenQuad.vert">
       <Filter>Vertex Shader</Filter>
     </None>
     <None Include="res\shaders\Geometry.geom">
@@ -163,8 +160,11 @@
     <None Include="res\shaders\Exposure.frag">
       <Filter>Fragment Shader</Filter>
     </None>
-    <None Include="res\shaders\Exposure.vert">
-      <Filter>Vertex Shader</Filter>
+    <None Include="res\shaders\Downsampling.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\Upsampling.frag">
+      <Filter>Fragment Shader</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -283,6 +283,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ConsoleColor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Bloom_Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FrameBufferTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -5,8 +5,8 @@
 #include "ErrorCheck.h"
 
 GLFWwindow* window;
-const unsigned int frameWidth = 1920;
-const unsigned int frameHeight = 1080;
+unsigned int m_FrameWidth = FRAME_WIDTH;
+unsigned int m_FrameHeight = FRAME_HEIGHT;
 const unsigned char aaSamples = 16;
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 2.0f, -3.0f);
@@ -130,7 +130,7 @@ bool Renderer::Init()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_SAMPLES, aaSamples);
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(frameWidth, frameHeight, "OpenGL", NULL, NULL);
+    window = glfwCreateWindow(m_FrameWidth, m_FrameHeight, "OpenGL", NULL, NULL);
     if (!window) {
         glfwTerminate();
         return false;
@@ -161,11 +161,11 @@ bool Renderer::Init()
 
 int Renderer::GetWidth()
 {
-    return frameWidth;
+    return m_FrameWidth;
 }
 int Renderer::GetHeight()
 {
-    return frameHeight;
+    return m_FrameHeight;
 }
 int Renderer::GetAASamples()
 {

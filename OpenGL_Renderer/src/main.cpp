@@ -8,13 +8,15 @@
 #include "Renderer.h"
 #include "ObjImporter.h"
 #include "Texture.h"
+#include "Bloom_Texture.h"
 #include "FrameBuffer.h"
+#include "FrameBufferTexture.h"
 #include "RenderBuffer.h"
 #include "PerformanceMeasure.h"
 
 Renderer renderer;
-int frameWidth = renderer.GetWidth();
-int frameHeight = renderer.GetHeight();
+int m_FrameWidth = renderer.GetWidth();
+int m_FrameHeight = renderer.GetHeight();
 const unsigned char aaSamples = renderer.GetAASamples();
 int BG_Width = 2048;
 int BG_Height = 2048;
@@ -200,26 +202,27 @@ int main(void)
         PerformanceMeasure measure("Starting time");
 
         FrameBuffer mainFB;
-        Texture mainFBMap(frameWidth, frameHeight, (unsigned char)aaSamples);
+        FrameBufferTexture mainFBMap(m_FrameWidth, m_FrameHeight, (unsigned char)aaSamples);
         mainFBMap.Bind(11);
-        RenderBuffer mainRB(frameWidth, frameHeight, aaSamples);
+        RenderBuffer mainRB(m_FrameWidth, m_FrameHeight, aaSamples);
         mainFB.CheckComplitness();
         mainFB.Unbind();
 
         FrameBuffer screenFB;
-        Texture screenFBMap(frameWidth, frameHeight,true,0.0f);
+        FrameBufferTexture screenFBMap(m_FrameWidth, m_FrameHeight);
         screenFBMap.Bind(10);
         screenFB.CheckComplitness();
         screenFB.Unbind();  
 
         FrameBuffer blurredFB;
-        Texture blurredFBMap(frameWidth, frameHeight, true, 0.0f);
-        blurredFBMap.Bind(9);
+        std::vector<BloomMip> mipIDs;
+        Bloom_Texture blurredFBMap;
+        blurredFBMap.GetMipChainTexIDs(mipIDs);
         blurredFB.CheckComplitness();
         blurredFB.Unbind();
 
-        FrameBuffer beautyFB;
-        Texture beautyFBMap(frameWidth, frameHeight, true, 0.0f);
+        FrameBuffer beautyFB;       
+        FrameBufferTexture beautyFBMap(m_FrameWidth, m_FrameHeight);
         beautyFBMap.Bind(8);
         beautyFB.CheckComplitness();
         beautyFB.Unbind();
@@ -237,15 +240,17 @@ int main(void)
         //----------------------------//
 
         //--Shader generation--//
-        Shader toneMappingShader("res/shaders/ToneMapping.vert", "res/shaders/ToneMapping.frag");
+        Shader compositingShader("res/shaders/ScreenQuad.vert", "res/shaders/Compositing.frag");
         Shader normalShader("res/shaders/NormalMap.vert", "res/shaders/NormalMap.frag");
         Shader pureColor("res/shaders/Color.vert", "res/shaders/Color.frag");
-        Shader gaussianBlurShader("res/shaders/GaussianBlur.vert", "res/shaders/GaussianBlur.frag");
-        Shader blendShader("res/shaders/Blend.vert", "res/shaders/Blend.frag");
-        Shader thresholdShader("res/shaders/Threshold.vert", "res/shaders/Threshold.frag");
+        Shader gaussianBlurShader("res/shaders/ScreenQuad.vert", "res/shaders/GaussianBlur.frag");
+        Shader blendShader("res/shaders/ScreenQuad.vert", "res/shaders/Blend.frag");
+        Shader thresholdShader("res/shaders/ScreenQuad.vert", "res/shaders/Threshold.frag");
         Shader skyboxShader("res/shaders/Skybox.vert", "res/shaders/Skybox.frag");
         Shader envMapShader("res/shaders/EnvironmentMap.vert", "res/shaders/EnvironmentMap.frag");
-        Shader exposureShader("res/shaders/Exposure.vert", "res/shaders/Exposure.frag");
+        Shader exposureShader("res/shaders/ScreenQuad.vert", "res/shaders/Exposure.frag");
+        Shader downsamplingShader("res/shaders/ScreenQuad.vert", "res/shaders/Downsampling.frag");
+        Shader upsamplingShader("res/shaders/ScreenQuad.vert", "res/shaders/Upsampling.frag");
 
         Shader pbrShader("res/shaders/pbr.vert", "res/shaders/pbr.frag");
         pbrShader.Bind();
@@ -265,14 +270,14 @@ int main(void)
 
         //glm::vec3 lightPosition = { 7.0f, 11.0f, 0.0f };
         glm::vec3 lightPosition = { 7.0f, 20.0f, -25.0f };
-        glm::vec3 lightColor = { 42.0f, 39.0f, 19.0f };
+        glm::vec3 lightColor = { 100.0f, 20.0f, 1.0f };
         //glm::vec3 lightColor = { 100.0f, 39.0f, 10.0f };
-        lightColor = lightColor * glm::vec3(0.0);
+        lightColor = lightColor * glm::vec3(30.0);
 
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
-        projection = glm::perspective(glm::radians(renderer.GetFov()), (float)frameWidth / (float)frameHeight, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(renderer.GetFov()), (float)m_FrameWidth / (float)m_FrameHeight, 0.1f, 100.0f);
         
         pbrShader.Bind();
         pbrShader.SetUniformMatrix4fv("projection", glm::value_ptr(projection));
@@ -298,7 +303,7 @@ int main(void)
         //----------------------------//
         
         //--Models import and vertex buffer, vertex array, layout generation for that models--//         
-        ObjImporter objCube("res/models/cube.obj", false);
+        ObjImporter objCube("res/models/geosphere.obj", false);
         VertexArray cubeVA;
         VertexBuffer cubeVB(objCube.GetVertecies(), objCube.GetVertCount());
         VertexBufferLayout cubeLayout;
@@ -326,12 +331,12 @@ int main(void)
         glm::vec3 cameraPos = glm::vec3();
         glm::vec3 cameraFront = glm::vec3();
         glm::vec3 cameraUp = glm::vec3();
-        renderer.ConfigureViewport(frameWidth, frameHeight);
+        renderer.ConfigureViewport(m_FrameWidth, m_FrameHeight);
 
         measure.Stop();
         //MAIN LOOP//
         while (renderer.IsWindowClosed())
-        {
+        {           
             renderer.ProceedInput();
             cameraPos = renderer.GetCameraPos();
             cameraFront = renderer.GetCameraFront();
@@ -400,67 +405,72 @@ int main(void)
 
             //POST-PROCESSING//
             screenFB.BindDraw();
-            screenFB.Blit(frameWidth, frameHeight);
+            screenFB.Blit(m_FrameWidth, m_FrameHeight);
             beautyFB.Bind();
             exposureShader.Bind();
             exposureShader.SetUniform1i("screenTexture", screenFBMap.GetTexSlotID());
+            exposureShader.SetUniform1f("exposure", 0.5);
             renderer.DrawVB(vaFB, vbFB, exposureShader);
 
-            blurredFB.BindDraw();
-            blurredFB.Blit(frameWidth, frameHeight);
-            
-            //beautyFB.Blit(frameWidth, frameHeight);
-
-
-
-            //--Threshold--// 
             screenFB.BindDraw();
-            screenFB.Blit(frameWidth, frameHeight);
+            screenFB.Blit(m_FrameWidth, m_FrameHeight);
+            screenFB.Bind();
+            exposureShader.Bind();
+            exposureShader.SetUniform1i("screenTexture", screenFBMap.GetTexSlotID());
+            exposureShader.SetUniform1f("exposure", 0.006);
+            renderer.DrawVB(vaFB, vbFB, exposureShader);
+
+            //--Glow--// 
             blurredFB.Bind();
-            renderer.Clear(glm::vec4(1.0f));
-            thresholdShader.Bind();
-            thresholdShader.SetUniform1i("screenTexture", screenFBMap.GetTexSlotID());
-            renderer.DrawVB(vaFB, vbFB, thresholdShader);           
+            //Downscale
+            blurredFBMap.Bind(9, mipIDs[0].mipId);
+            renderer.ConfigureViewport(m_FrameWidth, m_FrameHeight);
+            blurredFBMap.AttachTexToCurrFB(mipIDs[0].mipId);
+            downsamplingShader.Bind();
+            downsamplingShader.SetUniform1f("srcWidth", (float)mipIDs[0].mipWidth);
+            downsamplingShader.SetUniform1f("srcHeight", (float)mipIDs[0].mipHeight);
+            downsamplingShader.SetUniform1i("srcTexture", screenFBMap.GetTexSlotID());
+            renderer.DrawVB(vaFB, vbFB, downsamplingShader);
+
+            for (unsigned int mipLevel = 1; mipLevel < mipIDs.size(); mipLevel++)
+            { 
+                blurredFBMap.Bind(0, mipIDs[mipLevel - 1].mipId);
+                blurredFBMap.Bind(9, mipIDs[mipLevel].mipId);
+
+                renderer.ConfigureViewport(mipIDs[mipLevel].mipWidth, mipIDs[mipLevel].mipHeight);
+                blurredFBMap.AttachTexToCurrFB(mipIDs[mipLevel].mipId);
+                downsamplingShader.Bind();
+                downsamplingShader.SetUniform1f("srcWidth", (float)mipIDs[mipLevel].mipWidth);
+                downsamplingShader.SetUniform1f("srcHeight", (float)mipIDs[mipLevel].mipHeight);
+                downsamplingShader.SetUniform1i("srcTexture", 0);
+                renderer.DrawVB(vaFB, vbFB, downsamplingShader);
+            }
+
+            //Upscale
+            for (unsigned int mipLevel = mipIDs.size()-1; mipLevel > 0; mipLevel--)
+            {
+                blurredFBMap.Bind(0, mipIDs[mipLevel].mipId);
+                blurredFBMap.Bind(9, mipIDs[mipLevel - 1].mipId);
+            
+                renderer.ConfigureViewport(mipIDs[mipLevel - 1].mipWidth, mipIDs[mipLevel - 1].mipHeight);
+            
+                blurredFBMap.AttachTexToCurrFB(mipIDs[mipLevel-1].mipId);
+                upsamplingShader.Bind();
+                upsamplingShader.SetUniform1i("srcTexture", 0);
+                upsamplingShader.SetUniform1i("currTexture", 9);
+                renderer.DrawVB(vaFB, vbFB, upsamplingShader);
+            }
+            blurredFBMap.Bind(9, mipIDs[1].mipId);
             //----------------------------//
 
-            //--Gaussian blur--// 
-            for (unsigned int mipLevel = 0; mipLevel <= 10; mipLevel++)
-            {
-                bool horizontal = true;
-                for (size_t i = 0; i < 2; i++)
-                {
-                    screenFB.BindDraw();
-                    screenFB.Blit(frameWidth, frameHeight);
-                    screenFBMap.Bind();
-                    screenFBMap.GenMipMap();
-                    blurredFB.Bind();
-                    blurredFBMap.Bind();
-                    blurredFBMap.AttachTexToCurrFB(mipLevel);
-                    renderer.Clear(glm::vec4(1.0f));
-                    unsigned int mipWidth = static_cast<unsigned int>(frameWidth * std::pow(0.5, mipLevel));
-                    unsigned int mipHeight = static_cast<unsigned int>(frameHeight * std::pow(0.5, mipLevel));
-                    renderer.ConfigureViewport(mipWidth, mipHeight);
-                    gaussianBlurShader.Bind();
-                    gaussianBlurShader.SetUniform1i("screenTexture", screenFBMap.GetTexSlotID());
-                    gaussianBlurShader.SetUniform1i("mipLevel", mipLevel);
-                    gaussianBlurShader.SetUniform1i("horizontal", horizontal);
-                    renderer.DrawVB(vaFB, vbFB, gaussianBlurShader);
-                    blurredFBMap.AttachTexToCurrFB(0);
-                    horizontal = !horizontal;
-                }
-            }           
-            //----------------------------//
-            
-            //--Tone mapping--//
-            //screenFB.BindDraw();
-            //screenFB.Blit(frameWidth, frameHeight);
+            //--Compositing--//
             blurredFB.Unbind();
             blurredFB.DisableDepthTest();
-            renderer.ConfigureViewport(frameWidth, frameHeight);
-            toneMappingShader.Bind();
-            toneMappingShader.SetUniform1i("screenTexture01", blurredFBMap.GetTexSlotID());
-            toneMappingShader.SetUniform1i("screenTexture02", beautyFBMap.GetTexSlotID());
-            renderer.DrawVB(vaFB, vbFB, toneMappingShader);
+            renderer.ConfigureViewport(m_FrameWidth, m_FrameHeight);
+            compositingShader.Bind();
+            compositingShader.SetUniform1i("screenTexture01", blurredFBMap.GetTexSlotID());
+            compositingShader.SetUniform1i("screenTexture02", beautyFBMap.GetTexSlotID());
+            renderer.DrawVB(vaFB, vbFB, compositingShader);
             //----------------------------//
 
             renderer.SwapBuffers();

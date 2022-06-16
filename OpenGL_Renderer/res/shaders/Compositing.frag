@@ -28,7 +28,6 @@ vec3 filmicToneMapping(vec3 color)
 	return color;
 }
 
-
 vec3 simpleReinhardToneMapping(vec3 color)
 {
 	float exposure = 5.5;
@@ -67,27 +66,14 @@ vec3 Uncharted2ToneMapping(vec3 color)
 
 void main()
 {
-	//vec3 hdrColor01 = texture(screenTexture01, TexCoords).rgb;
-	vec3 hdrColor01 = textureLod(screenTexture01, TexCoords, 0).rgb;
-	hdrColor01 += textureLod(screenTexture01, TexCoords, 1).rgb;
-	hdrColor01 += textureLod(screenTexture01, TexCoords, 2).rgb;
-	hdrColor01 += textureLod(screenTexture01, TexCoords, 3).rgb;
-	hdrColor01 += textureLod(screenTexture01, TexCoords, 4).rgb;
-	hdrColor01 += textureLod(screenTexture01, TexCoords, 5).rgb;
-	hdrColor01 += textureLod(screenTexture01, TexCoords, 6).rgb;
-	hdrColor01 += textureLod(screenTexture01, TexCoords, 7).rgb;
-	hdrColor01 += textureLod(screenTexture01, TexCoords, 8).rgb;
-	hdrColor01 += textureLod(screenTexture01, TexCoords, 9).rgb;
-	hdrColor01 = hdrColor01 * 2.5;
-	float average = 0.5526 * hdrColor01.r + 0.7152 * hdrColor01.g + 0.0722 * hdrColor01.b;
-	//float average =  (hdrColor01.r + hdrColor01.g * hdrColor01.b)/3;
-	hdrColor01 = mix(hdrColor01, vec3(average), 0.35);
+	vec3 hdrColor01 = texture(screenTexture01, TexCoords).rgb;
 	vec3 hdrColor02 = texture(screenTexture02, TexCoords).rgb;
+
 	////vec3 mapped = vec3(1.0) - exp(-hdrColor * 1.0);
 	vec3 result = hdrColor01+hdrColor02;
 	//vec3 result = hdrColor01;
 	//result = result * 1.0;
-	vec3 mapped = tonemapFilmic(result);
+	vec3 mapped = aces(result);
 	////mapped = pow(mapped, vec3( 1.0 / 1.0));
 	////FragColor = vec4(mapped, 1.0);
 	FragColor = vec4(mapped,1.0);

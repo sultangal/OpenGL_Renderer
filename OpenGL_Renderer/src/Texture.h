@@ -5,11 +5,13 @@ class Texture
 {
 private:
 	unsigned int m_TextureID;
-	unsigned char m_TextureSlot;
 	int m_TexType;
+	unsigned char m_TextureSlot;
+protected:
 	void AssignTexSlot(unsigned char textureSlot);
 	
 public:
+	Texture();
 	Texture(const unsigned int& cubeMapWidth, const unsigned int& cubeMapHeight, bool genMipMap);
 	Texture(const std::string& filePath, bool gammaCorrected);
 	Texture(std::string hdrPath);
@@ -26,6 +28,6 @@ public:
 	void AttachTexToCurrFB();
 	void AttachCubeTexToCurrFB(unsigned int i, unsigned int mipmapLevel);
 	void AttachTexToCurrFB(unsigned int mipmapLevel);
-	void GenMipMap();
+	virtual void GenMipMap();
 };
 

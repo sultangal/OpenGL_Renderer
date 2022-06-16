@@ -6,6 +6,10 @@
 #include "stb_image.h"
 #include "ErrorCheck.h"
 
+Texture::Texture()
+{
+}
+
 Texture::Texture(const unsigned int& cubeMapWidth, const unsigned int& cubeMapHeight, bool containMipMap)
     :m_TextureID(0), m_TextureSlot(0), m_TexType(GL_TEXTURE_CUBE_MAP)
 {
@@ -100,8 +104,8 @@ Texture::Texture(const unsigned int& frameWidth, const unsigned int& frameHeight
     AssignTexSlot(m_TextureSlot);
     GLCall(glBindTexture(GL_TEXTURE_2D, m_TextureID));
     GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, frameWidth, frameHeight, 0, GL_RGB, GL_FLOAT, NULL));
-    GLCall(glGenerateMipmap(GL_TEXTURE_2D));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+    //GLCall(glGenerateMipmap(GL_TEXTURE_2D));
+    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 13));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));

@@ -18,6 +18,7 @@ public:
 	void DrawVB_Strip(const VertexArray& va, const VertexBuffer& vb) const;
 	int GetWidth();
 	int GetHeight();
+	void UpdateScreenResolution(unsigned int& frameWidth, unsigned int& frameHeight);
 	int GetAASamples();
 	bool IsWindowClosed();
 	void ConfigureViewport(unsigned int width, unsigned int height);
