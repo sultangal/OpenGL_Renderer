@@ -8,6 +8,8 @@
 #include "Renderer.h"
 #include "ObjImporter.h"
 #include "Texture.h"
+#include "File_Texture.h"
+#include "IBL_Texture.h"
 #include "Bloom_Texture.h"
 #include "FrameBuffer.h"
 #include "FrameBufferTexture.h"
@@ -95,7 +97,7 @@ void inline RenderQuad()
     renderer.DrawVB_Strip(quadVA, quadVB);
 }
 
-void inline PrepareIBL(Texture& hdrTEX, Texture& envCubeMAP, Texture& irradianceMAP, Texture& prefilterMAP, Texture& brdfLutMAP, FrameBuffer& captureFB, RenderBuffer& captureRB)
+void inline PrepareIBL(File_Texture& hdrTEX, IBL_Texture& envCubeMAP, IBL_Texture& irradianceMAP, IBL_Texture& prefilterMAP, IBL_Texture& brdfLutMAP, FrameBuffer& captureFB, RenderBuffer& captureRB)
 {
 
     Shader equirectangularToCubemapShader("res/shaders/cubemap.vert", "res/shaders/equirectangular_to_cubemap.frag");
@@ -231,11 +233,11 @@ int main(void)
         FrameBuffer captureFB;
         RenderBuffer captureRB(BG_Width, BG_Height);
         captureFB.CheckComplitness();        
-        Texture hdrTEX("res/textures/hansaplatz_4k.hdr");
-        Texture envCubeMAP(BG_Width, BG_Height, true);
-        Texture irradianceMAP(32, 32, false);
-        Texture prefilterMAP(128, 128, true);
-        Texture brdfLutMAP(BG_Width, BG_Height);
+        File_Texture hdrTEX("res/textures/carb_05_XXL.hdr");
+        IBL_Texture envCubeMAP(BG_Width, BG_Height, true);
+        IBL_Texture irradianceMAP(32, 32, false);
+        IBL_Texture prefilterMAP(128, 128, true);
+        IBL_Texture brdfLutMAP(BG_Width, BG_Height);
         PrepareIBL(hdrTEX, envCubeMAP, irradianceMAP, prefilterMAP, brdfLutMAP, captureFB, captureRB);
         //----------------------------//
 
@@ -320,10 +322,10 @@ int main(void)
 
         //--Texture generation--//  
         //Texture albedoTEX("res/textures/tgziabifa_4K_Albedo.jpg", true);
-        Texture normalTEX("res/textures/tgziabifa_4K_Normal_LOD0.jpg", false);
+        File_Texture normalTEX("res/textures/tgziabifa_4K_Normal_LOD0.jpg", false);
         //Texture metallic("res/textures/tgziabifa_4K_Displacement.jpg", true);
-        Texture roughnessTEX("res/textures/tgziabifa_4K_Roughness.jpg", true);
-        Texture aoTEX("res/textures/tgziabifa_4K_Cavity.jpg", false); 
+        File_Texture roughnessTEX("res/textures/tgziabifa_4K_Roughness.jpg", true);
+        File_Texture aoTEX("res/textures/tgziabifa_4K_Cavity.jpg", false);
         //----------------------------//
 
         float rotation = 0.0f;
@@ -409,7 +411,7 @@ int main(void)
             beautyFB.Bind();
             exposureShader.Bind();
             exposureShader.SetUniform1i("screenTexture", screenFBMap.GetTexSlotID());
-            exposureShader.SetUniform1f("exposure", 0.5);
+            exposureShader.SetUniform1f("exposure", 2.5);
             renderer.DrawVB(vaFB, vbFB, exposureShader);
 
             screenFB.BindDraw();
@@ -422,7 +424,7 @@ int main(void)
 
             //--Glow--// 
             blurredFB.Bind();
-            //Downscale
+            //Downscale           
             blurredFBMap.Bind(9, mipIDs[0].mipId);
             renderer.ConfigureViewport(m_FrameWidth, m_FrameHeight);
             blurredFBMap.AttachTexToCurrFB(mipIDs[0].mipId);

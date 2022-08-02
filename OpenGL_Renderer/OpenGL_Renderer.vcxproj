@@ -94,9 +94,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Bloom_Texture.cpp" />
+    <ClCompile Include="src\Bloom_Texture.cpp" />
+    <ClCompile Include="src\File_Texture.cpp" />
     <ClCompile Include="src\FrameBuffer.cpp" />
     <ClCompile Include="src\FrameBufferTexture.cpp" />
+    <ClCompile Include="src\IBL_Texture.cpp" />
     <ClCompile Include="src\ObjImporter.cpp" />
     <ClCompile Include="src\ErrorCheck.cpp" />
     <ClCompile Include="src\pch.cpp">
@@ -152,9 +154,11 @@
     <None Include="res\shaders\Skybox.vert" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Bloom_Texture.h" />
+    <ClInclude Include="src\Bloom_Texture.h" />
     <ClInclude Include="src\ConsoleColor.h" />
+    <ClInclude Include="src\File_Texture.h" />
     <ClInclude Include="src\FrameBufferTexture.h" />
+    <ClInclude Include="src\IBL_Texture.h" />
     <ClInclude Include="src\PerformanceMeasure.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\FrameBuffer.h" />

@@ -14,7 +14,7 @@ public:
     ~Bloom_Texture();
 
     void GetMipChainTexIDs(std::vector<BloomMip>& bloomMip);
-    void AttachTexToCurrFB(int texID);
+    void AttachTexToCurrFB(unsigned int texID);
     void Bind(unsigned char textureSlot, int texID);
 
 private:

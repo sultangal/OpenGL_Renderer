@@ -1,5 +1,3 @@
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
 #include "pch.h"
 #include "Bloom_Texture.h"
 #include "ErrorCheck.h"
@@ -33,14 +31,12 @@ Bloom_Texture::Bloom_Texture()
 
 Bloom_Texture::~Bloom_Texture(){}
 
-
-
 void Bloom_Texture::GetMipChainTexIDs(std::vector<BloomMip>& mipIDs)
 {
     mipIDs = m_MipIDs;
 }
 
-void Bloom_Texture::AttachTexToCurrFB(int texID)
+void Bloom_Texture::AttachTexToCurrFB(unsigned int texID)
 {
     GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texID, 0));
 }

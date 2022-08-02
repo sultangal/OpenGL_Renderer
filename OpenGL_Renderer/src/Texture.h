@@ -3,21 +3,13 @@
 
 class Texture
 {
-private:
-	unsigned int m_TextureID;
-	int m_TexType;
-	unsigned char m_TextureSlot;
 protected:
-	void AssignTexSlot(unsigned char textureSlot);
+	unsigned int m_TextureID = 0;
+	int m_TexType = 0;
+	unsigned char m_TextureSlot = 0;
 	
 public:
 	Texture();
-	Texture(const unsigned int& cubeMapWidth, const unsigned int& cubeMapHeight, bool genMipMap);
-	Texture(const std::string& filePath, bool gammaCorrected);
-	Texture(std::string hdrPath);
-	Texture(const unsigned int& frameWidth, const unsigned int& frameHeight, const unsigned char& aaSamples);
-	Texture(const unsigned int& frameWidth, const unsigned int& frameHeight);
-	Texture(const unsigned int& frameWidth, const unsigned int& frameHeight, bool b, float f);
 	~Texture();
 
 	int GetID();
@@ -26,8 +18,8 @@ public:
 	void Unbind();
 	unsigned char GetTexSlotID();
 	void AttachTexToCurrFB();
-	void AttachCubeTexToCurrFB(unsigned int i, unsigned int mipmapLevel);
 	void AttachTexToCurrFB(unsigned int mipmapLevel);
-	virtual void GenMipMap();
+	void GenMipMap();
+	void AssignTexSlot(unsigned char textureSlot);
 };
 
