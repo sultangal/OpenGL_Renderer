@@ -7,7 +7,6 @@ bin/x64/
 OpenGL_Renderer/OpenGL_Renderer/res/textures/
 OpenGL_Renderer/OpenGL_Renderer/res/models/
 
-
 # Files
 *.user
 *.obj
@@ -16,5 +15,6 @@ OpenGL_Renderer/OpenGL_Renderer/res/models/
 *.jpeg
 *.png
 *.tga
-*.rar
 *.hdr
+*.rar
+
