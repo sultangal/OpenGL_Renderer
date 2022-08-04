@@ -141,29 +141,4 @@ void main()
     
     vec3 color = ambient + Lo; 
     OUT = vec4(color, 1.0);
-
-
-    ////vec3 normal = texture(normalMap, fs_in.TexCoords).rgb;
-    ////// transform normal vector to range [-1,1]
-    ////normal = normalize(normal * 2.0 - 1.0);  // this normal is in tangent space
-    ////
-    ////vec3 color = texture(diffuseMap, fs_in.TexCoords).rgb;
-    ////
-    //////attenuation
-    ////float distance = length(lightPos - fs_in.FragPos);
-    ////float attenuation = 1.0 / (constant + linear * distance + quadratic * (distance * distance));
-    ////
-    ////// diffuse
-    ////vec3 lightDir = normalize(fs_in.TangentLightPos - fs_in.TangentFragPos);
-    ////float diff = max(dot(lightDir, normal), 0.0);
-    ////vec3 diffuse = diff * lightColor;
-    ////
-    ////// specular
-    ////vec3 viewDir = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
-    ////vec3 reflectDir = reflect(-lightDir, normal);
-    ////vec3 halfwayDir = normalize(lightDir + viewDir);  
-    ////float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
-    ////
-    ////vec3 specular = vec3(10.2) * spec * lightColor;
-    ////OUT = vec4((ambientLight + diffuse * attenuation + texture(specularTexture, fs_in.TexCoords).rgb * specular * attenuation) * color, 1.0);
 }

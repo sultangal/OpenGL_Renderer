@@ -21,6 +21,12 @@
     <Filter Include="Vertex Shader">
       <UniqueIdentifier>{4bb831e4-56c9-4502-ad8a-37debb1b5099}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Texture">
+      <UniqueIdentifier>{adbedf6b-ac08-4dce-bed3-3aa0b8ae3998}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Texture">
+      <UniqueIdentifier>{9cfa6fd1-df8f-45cf-a3a3-e53b156bd63a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\MAIN.cpp">
@@ -47,9 +53,6 @@
     <ClCompile Include="src\ObjImporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -58,6 +61,21 @@
     </ClCompile>
     <ClCompile Include="src\RenderBuffer.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Bloom_Texture.cpp">
+      <Filter>Source Files\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IBL_Texture.cpp">
+      <Filter>Source Files\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FrameBufferTexture.cpp">
+      <Filter>Source Files\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Texture.cpp">
+      <Filter>Source Files\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="src\File_Texture.cpp">
+      <Filter>Source Files\Texture</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -76,25 +94,16 @@
     <None Include="res\shaders\Threshold.frag">
       <Filter>Fragment Shader</Filter>
     </None>
-    <None Include="res\shaders\ToneMapping.frag">
+    <None Include="res\shaders\Compositing.frag">
       <Filter>Fragment Shader</Filter>
     </None>
-    <None Include="res\shaders\Blend.vert">
-      <Filter>Vertex Shader</Filter>
-    </None>
     <None Include="res\shaders\Color.vert">
-      <Filter>Vertex Shader</Filter>
-    </None>
-    <None Include="res\shaders\GaussianBlur.vert">
       <Filter>Vertex Shader</Filter>
     </None>
     <None Include="res\shaders\NormalMap.vert">
       <Filter>Vertex Shader</Filter>
     </None>
-    <None Include="res\shaders\Threshold.vert">
-      <Filter>Vertex Shader</Filter>
-    </None>
-    <None Include="res\shaders\ToneMapping.vert">
+    <None Include="res\shaders\ScreenQuad.vert">
       <Filter>Vertex Shader</Filter>
     </None>
     <None Include="res\shaders\Geometry.geom">
@@ -129,6 +138,45 @@
     </None>
     <None Include="res\shaders\PBR_mat.vert">
       <Filter>Vertex Shader</Filter>
+    </None>
+    <None Include="res\shaders\background.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\brdf.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\equirectangular_to_cubemap.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\pbr.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\prefilter.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\background.vert">
+      <Filter>Vertex Shader</Filter>
+    </None>
+    <None Include="res\shaders\brdf.vert">
+      <Filter>Vertex Shader</Filter>
+    </None>
+    <None Include="res\shaders\cubemap.vert">
+      <Filter>Vertex Shader</Filter>
+    </None>
+    <None Include="res\shaders\pbr.vert">
+      <Filter>Vertex Shader</Filter>
+    </None>
+    <None Include="res\shaders\irradiance_convolution.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\Exposure.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\Downsampling.frag">
+      <Filter>Fragment Shader</Filter>
+    </None>
+    <None Include="res\shaders\Upsampling.frag">
+      <Filter>Fragment Shader</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -231,9 +279,6 @@
     <ClInclude Include="src\ObjImporter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -242,6 +287,27 @@
     </ClInclude>
     <ClInclude Include="src\RenderBuffer.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PerformanceMeasure.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ConsoleColor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Bloom_Texture.h">
+      <Filter>Header Files\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="src\File_Texture.h">
+      <Filter>Header Files\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IBL_Texture.h">
+      <Filter>Header Files\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FrameBufferTexture.h">
+      <Filter>Header Files\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Texture.h">
+      <Filter>Header Files\Texture</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

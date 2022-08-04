@@ -94,7 +94,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Bloom_Texture.cpp" />
+    <ClCompile Include="src\File_Texture.cpp" />
     <ClCompile Include="src\FrameBuffer.cpp" />
+    <ClCompile Include="src\FrameBufferTexture.cpp" />
+    <ClCompile Include="src\IBL_Texture.cpp" />
     <ClCompile Include="src\ObjImporter.cpp" />
     <ClCompile Include="src\ErrorCheck.cpp" />
     <ClCompile Include="src\pch.cpp">
@@ -115,31 +119,47 @@
     <ClCompile Include="src\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="res\shaders\Downsampling.frag" />
+    <None Include="res\shaders\background.frag" />
+    <None Include="res\shaders\background.vert" />
+    <None Include="res\shaders\brdf.frag" />
+    <None Include="res\shaders\brdf.vert" />
+    <None Include="res\shaders\cubemap.vert" />
+    <None Include="res\shaders\equirectangular_to_cubemap.frag" />
+    <None Include="res\shaders\Exposure.frag" />
+    <None Include="res\shaders\irradiance_convolution.frag" />
+    <None Include="res\shaders\pbr.frag" />
+    <None Include="res\shaders\pbr.vert" />
     <None Include="res\shaders\PBR_mat.frag" />
     <None Include="res\shaders\PBR_mat.vert" />
     <None Include="res\shaders\Blend.frag" />
-    <None Include="res\shaders\Blend.vert" />
     <None Include="res\shaders\Color.frag" />
     <None Include="res\shaders\Color.vert" />
     <None Include="res\shaders\EnvironmentMap.frag" />
     <None Include="res\shaders\EnvironmentMap.vert" />
     <None Include="res\shaders\Fragment.frag" />
     <None Include="res\shaders\GaussianBlur.frag" />
-    <None Include="res\shaders\GaussianBlur.vert" />
     <None Include="res\shaders\Geometry.geom" />
     <None Include="res\shaders\NormalMap.frag" />
     <None Include="res\shaders\NormalMap.geom" />
     <None Include="res\shaders\NormalMap.vert" />
+    <None Include="res\shaders\prefilter.frag" />
     <None Include="res\shaders\Shader.glsl" />
     <None Include="res\shaders\Threshold.frag" />
-    <None Include="res\shaders\Threshold.vert" />
-    <None Include="res\shaders\ToneMapping.frag" />
-    <None Include="res\shaders\ToneMapping.vert" />
+    <None Include="res\shaders\Compositing.frag" />
+    <None Include="res\shaders\ScreenQuad.vert" />
+    <None Include="res\shaders\Upsampling.frag" />
     <None Include="res\shaders\Vertex.vert" />
     <None Include="res\shaders\Skybox.frag" />
     <None Include="res\shaders\Skybox.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Bloom_Texture.h" />
+    <ClInclude Include="src\ConsoleColor.h" />
+    <ClInclude Include="src\File_Texture.h" />
+    <ClInclude Include="src\FrameBufferTexture.h" />
+    <ClInclude Include="src\IBL_Texture.h" />
+    <ClInclude Include="src\PerformanceMeasure.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\FrameBuffer.h" />
     <ClInclude Include="src\ObjImporter.h" />

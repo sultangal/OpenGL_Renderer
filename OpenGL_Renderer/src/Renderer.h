@@ -11,14 +11,19 @@ public:
 	~Renderer();
 	bool Init();
 	void Clear(glm::vec4 color);
+	void Clear();
 	void DrawIB(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const;
 	void DrawVB(const VertexArray& va, const VertexBuffer& vb, const Shader& shader) const;
+	void DrawVB(const VertexArray& va, const VertexBuffer& vb) const;
+	void DrawVB_Strip(const VertexArray& va, const VertexBuffer& vb) const;
 	int GetWidth();
 	int GetHeight();
+	void UpdateScreenResolution(unsigned int& frameWidth, unsigned int& frameHeight);
 	int GetAASamples();
 	bool IsWindowClosed();
+	void ConfigureViewport(unsigned int width, unsigned int height);
 	void ProceedInput();
-	void  Terminate();
+	void Terminate();
 	void SwapBuffers();
 
 	glm::vec3 GetCameraPos();

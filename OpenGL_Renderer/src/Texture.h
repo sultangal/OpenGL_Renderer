@@ -3,22 +3,23 @@
 
 class Texture
 {
-private:
-	unsigned int m_RendererID;
-	unsigned char m_TextureSlot;
-	int m_TexType;
-	void AssignTexSlot(unsigned char textureSlot);
+protected:
+	unsigned int m_TextureID = 0;
+	int m_TexType = 0;
+	unsigned char m_TextureSlot = 0;
 	
 public:
-	Texture(const std::string& filePath, unsigned char textureSlot, bool gammaCorrected);
-	Texture(std::string faces[6], unsigned char textureSlot);
-	Texture(const unsigned int& frameWidth, const unsigned int& frameHeight, const unsigned char& aaSamples, unsigned char textureSlot);
-	Texture(const unsigned int& frameWidth, const unsigned int& frameHeight, unsigned char textureSlot);
+	Texture();
 	~Texture();
 
+	int GetID();
 	void Bind(unsigned char textureSlot);
 	void Bind();
 	void Unbind();
 	unsigned char GetTexSlotID();
+	void AttachTexToCurrFB();
+	void AttachTexToCurrFB(unsigned int mipmapLevel);
+	void GenMipMap();
+	void AssignTexSlot(unsigned char textureSlot);
 };
 

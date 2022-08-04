@@ -2,11 +2,11 @@
 out vec4 OUT;
 
 in VS_OUT {
-    vec3 FragPos;
+    vec3 WorldPos;
     vec2 TexCoords;
     vec3 TangentLightPos;
     vec3 TangentViewPos;
-    vec3 TangentFragPos;
+    vec3 TangentWorldPos;
 } fs_in;
 
 uniform sampler2D diffuseMap;
@@ -34,16 +34,16 @@ void main()
     vec3 color = texture(diffuseMap, fs_in.TexCoords).rgb;
 
     //attenuation
-    float distance = length(lightPos - fs_in.FragPos);
+    float distance = length(lightPos - fs_in.WorldPos);
     float attenuation = 1.0 / (constant + linear * distance + quadratic * (distance * distance));
 
     // diffuse
-    vec3 lightDir = normalize(fs_in.TangentLightPos - fs_in.TangentFragPos);
+    vec3 lightDir = normalize(fs_in.TangentLightPos - fs_in.TangentWorldPos);
     float diff = max(dot(lightDir, normal), 0.0);
     vec3 diffuse = diff * lightColor;
 
     // specular
-    vec3 viewDir = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
+    vec3 viewDir = normalize(fs_in.TangentViewPos - fs_in.TangentWorldPos);
     vec3 reflectDir = reflect(-lightDir, normal);
     vec3 halfwayDir = normalize(lightDir + viewDir);  
     float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);

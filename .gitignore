@@ -4,9 +4,8 @@ x64/
 bin/intermediates/
 bin/Win32/
 bin/x64/
-OpenGL_Renderer/OpenGL_Renderer/res/models/
 OpenGL_Renderer/OpenGL_Renderer/res/textures/
-
+OpenGL_Renderer/OpenGL_Renderer/res/models/
 
 # Files
 *.user
@@ -18,3 +17,4 @@ OpenGL_Renderer/OpenGL_Renderer/res/textures/
 *.tga
 *.hdr
 *.rar
+
